@@ -3,8 +3,10 @@ import tqdm
 import re
 import os
 
+from .base import BaseDownloader
 
-class Downloader(object):
+
+class Downloader(BaseDownloader):
     def __init__(self, url, path, filename=None):
         self.url = url  # 下载地址
         self.path = path  # 下载路径
@@ -37,7 +39,7 @@ class Downloader(object):
             total_size = 0
         return total_size
 
-    def downFile(self):  # 下载文件
+    def donwload(self):  # 下载文件
         chunk_size = 1024  # 设置每次写入块大小
         total_size = self.getFilesize()  # 关于从网页得到文件大小为零的情况，还需要再判断，后期补充
 

@@ -34,7 +34,7 @@ def startDown(links, path):
 
     for link in links:
         down = Downloader(link, path)
-        pool.apply(down.downFile)
+        pool.apply(down.donwload)
     pool.close()
     pool.join()
 
