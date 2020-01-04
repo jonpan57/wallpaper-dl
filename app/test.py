@@ -1,6 +1,9 @@
 import requests
+import os
 
-session = requests.Session()
-resp = session.get('https://bing.ioliu.cn/')
-
-print(resp.cookies)
+path = 'teat/aab/bet/'
+filename = 'text.txt'
+if not os.path.exists(path):
+    os.makedirs(path, exist_ok=True)
+with open(path + filename, 'wb') as f:
+    f.write(b'a')
