@@ -1,4 +1,6 @@
-import logging
+import requests
 
-logging.getLogger('test')
-logging.debug('Hellow')
+session = requests.Session()
+resp = session.get('https://bing.ioliu.cn/')
+
+print(resp.cookies)
