@@ -7,7 +7,7 @@ class BaseDownloader:
     def __init__(self, extractor):
         self.session = extractor.session
 
-        self._chunk_size = 16384
+        self._chunk_size = config.getConfig('downloader', 'chunk_size')
 
     def download(self, url, path, options=None):
         self.preProgress()

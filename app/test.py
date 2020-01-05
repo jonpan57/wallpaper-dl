@@ -10,7 +10,7 @@ import mimetypes
 # print(resp.cookies)
 
 
-from . import config
+import config
 
-s=config.getConfig('downloader', 'chunk_size')
+s = config.getConfig('downloader', 'chunk_size')
 print(s)
