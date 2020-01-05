@@ -27,6 +27,9 @@ class Config:
         self.__cfg.set(self.__section, self.__option, value)  # 设置配置值
         self.__cfg.write(open(cfg_path, 'w'))  # 写入配置文件
 
+    def remove(self):  # 删除配置想项
+        pass
+
 
 test = Config('test', 'test')
 test.value = 'hahaha'

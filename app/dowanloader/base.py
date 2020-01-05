@@ -1,13 +1,15 @@
 import logging
 import mimetypes
-from .. import config
+from ..config import Config
+
+section = 'downloader'
 
 
 class BaseDownloader:
     def __init__(self, extractor):
         self.session = extractor.session
 
-        self._chunk_size = config.getConfig('downloader', 'chunk_size')
+        self._chunk_size = Config(section, 'chunk_size').value
 
     def download(self, url, path, options=None):
         self.preProgress()
