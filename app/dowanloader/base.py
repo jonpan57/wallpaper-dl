@@ -7,18 +7,18 @@ section = 'downloader'
 
 class BaseDownloader:
     def __init__(self, extractor):
-        self.session = extractor.session
+        self._session = extractor.session
 
         self._chunk_size = config.get(section, 'chunk_size')
 
     def download(self, url, path, options=None):
-        self.preProgress()
+        self._preProgress()
         if options is None:
             options = {}
         total_size = None
-        response = self.session.get(url)
+        response = self._session.head(url)
         filename = self.getFilename(response, options.get('filename'))
-        self.postProgress()
+        self._postProgress()
 
     def getFilename(self, response, filename=None):
         if filename:
@@ -30,8 +30,8 @@ class BaseDownloader:
 
         return filename
 
-    def preProgress(self):
+    def _preProgress(self):
         pass
 
-    def postProgress(self):
+    def _postProgress(self):
         pass
