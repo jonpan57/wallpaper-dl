@@ -1,22 +1,37 @@
-import os
-import sys
-import time
 import logging
+import mimetypes
+from .. import config
+
+section = 'downloader'
 
 
 class BaseDownloader:
     def __init__(self, extractor):
-        self.session = extractor.session
-        self.chunk_size = 16384
-        self._total_size = None
+        self._session = extractor.session
 
-    def donwload(self):
-        self.pre_process()
+        self._chunk_size = config.get(section, 'chunk_size')
 
-        self.post_process()
+    def download(self, url, path, options=None):
+        self._preProgress()
+        if options is None:
+            options = {}
+        total_size = None
+        response = self._session.head(url)
+        filename = self.getFilename(response, options.get('filename'))
+        self._postProgress()
 
-    def pre_process(self):
+    def getFilename(self, response, filename=None):
+        if filename:
+            content_type = response.headers['Content-Type']
+            filename = filename + mimetypes.guess_type(content_type)
+
+        else:
+            pass
+
+        return filename
+
+    def _preProgress(self):
         pass
 
-    def post_process(self):
+    def _postProgress(self):
         pass
