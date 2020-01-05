@@ -1,4 +1,6 @@
 import logging
+import mimetypes
+from .. import config
 
 
 class BaseDownloader:
@@ -6,17 +8,28 @@ class BaseDownloader:
         self.session = extractor.session
 
         self._chunk_size = 16384
-        self._total_size = None
 
-    def download(self):
-        self.pre_progress()
+    def download(self, url, path, options=None):
+        self.preProgress()
+        if options is None:
+            options = {}
+        total_size = None
+        response = self.session.get(url)
+        filename = self.getFilename(response, options.get('filename'))
+        self.postProgress()
 
+    def getFilename(self, response, filename=None):
+        if filename:
+            content_type = response.headers['Content-Type']
+            filename = filename + mimetypes.guess_type(content_type)
 
+        else:
+            pass
 
-        self.post_progress()
+        return filename
 
-    def pre_progress(self):
+    def preProgress(self):
         pass
 
-    def post_progress(self):
+    def postProgress(self):
         pass

@@ -6,7 +6,7 @@ import os
 from .base import BaseDownloader
 
 
-class Downloader(BaseDownloader):
+class Downloader(object):
     def __init__(self, url, path, filename=None):
         self.url = url  # 下载地址
         self.path = path  # 下载路径
