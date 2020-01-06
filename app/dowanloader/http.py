@@ -1,5 +1,6 @@
 import os
 import re
+import tqdm
 import requests
 import mimetypes
 
@@ -12,33 +13,42 @@ class HttpDownloader(BaseDownloader):
 
     def download(self, url, **options):
         response = self._getResponse(url)
-        path = self._getPath(options.get('path'))
-        filename = self._getFilename(url, options.get('filename'))
+        if response:
+            path = self._getPath(options.get('path'))
+            filename = self._getFilename(response, options.get('filename'))
 
     def _getResponse(self, url):
         try:
-            resp = self.session.head(url, timeout=self.timeout)
-        except:
-            pass  # 判断是否能下载的，需补充
+            response = self.session.head(url, timeout=self.timeout)
+
+        except ConnectionError:
+            print(url + '--> Connection Timeout !')
+            return None
+
         else:
-            return resp
+            return response
 
     def _getPath(self, path):
         if path:
+            if not os.path.exists(self.path):
+                os.makedirs(self.path, exist_ok=True)
             return path
+
         else:
             return self.default_path
 
-    def _getFilename(self, url, filename):  # 获取下载文件名的多种方式及优先级：用户自定义 > Content-Disposition > url路径定义
+    def _getFilename(self, response, filename):
+        # 获取下载文件名的多种方式及优先级：用户自定义 > Content-Disposition > url路径定义
         if filename:
-            filename = filename + mimetypes.guess_type(response.headers['Content-Type'])
-        elif 'Content-Disposition' in self.response.headers:
-            content = self.response.headers.get('Content-Disposition')
-            filename = re.search(r'filename="(.+?)"', content).group(1)
-        else:
-            filename = os.path.basename(self.url)
+            suffix = mimetypes.guess_type(response.headers.get('Content-Type'))
+            return filename + suffix
 
-        return filename
+        elif 'Content-Disposition' in response.headers:
+            disposition = response.headers.get('Content-Disposition')
+            return re.search(r'filename="(.+?)"', disposition).group(1)
+
+        else:
+            return os.path.basename(response.request.url)
 
     def getFilesize(self):  # 获取下载文件总大小
         if 'Content-Length' in self.response.headers:
@@ -47,7 +57,13 @@ class HttpDownloader(BaseDownloader):
             total_size = 0
         return total_size
 
-    def donwload2(self):  # 下载文件
+    def _rangeDownload(self, url, path, filename):
+        pass
+
+    def _chunkedDownload(self, url, path, filename):
+        pass
+
+    def downloading(self):  # 下载文件
         chunk_size = 1024  # 设置每次写入块大小
         total_size = self.getFilesize()  # 关于从网页得到文件大小为零的情况，还需要再判断，后期补充
 
