@@ -12,23 +12,28 @@ class HttpDownloader(BaseDownloader):
         super().__init__(extractor)
 
     def download(self, url, **options):
-        response = self._getResponse(url)
-        if response:
-            path = self._getPath(options.get('path'))
-            filename = self._getFilename(response, options.get('filename'))
+        response = self._get_response(url)
+        if response and response.status_code == requests.codes.ok:
+            file_path = self._get_file_path(options.get('path'))
+            file_name = self._get_file_name(response, options.get('filename'))
+            if response.headers.get('Accept-Ranges') == 'bytes':  # 支持断点续传的标志，同时也可以多线程下载
+                total_size = self._get_file_size(response)
 
-    def _getResponse(self, url):
+        else:
+            print(url + ' --> Status Code ' + response.status_code)
+
+    def _get_response(self, url):
         try:
             response = self.session.head(url, timeout=self.timeout)
 
         except ConnectionError:
-            print(url + '--> Connection Timeout !')
+            print(url + ' --> Connection Timeout !')
             return None
 
         else:
             return response
 
-    def _getPath(self, path):
+    def _get_file_path(self, path):
         if path:
             if not os.path.exists(self.path):
                 os.makedirs(self.path, exist_ok=True)
@@ -37,7 +42,7 @@ class HttpDownloader(BaseDownloader):
         else:
             return self.default_path
 
-    def _getFilename(self, response, filename):
+    def _get_file_name(self, response, filename):
         # 获取下载文件名的多种方式及优先级：用户自定义 > Content-Disposition > url路径定义
         if filename:
             suffix = mimetypes.guess_type(response.headers.get('Content-Type'))
@@ -50,17 +55,17 @@ class HttpDownloader(BaseDownloader):
         else:
             return os.path.basename(response.request.url)
 
-    def getFilesize(self):  # 获取下载文件总大小
+    def _get_file_size(self):  # 获取下载文件总大小
         if 'Content-Length' in self.response.headers:
             total_size = int(self.response.headers.get('Content-Length'))
         else:
             total_size = 0
         return total_size
 
-    def _rangeDownload(self, url, path, filename):
+    def _range_download(self, url, path, filename):
         pass
 
-    def _chunkedDownload(self, url, path, filename):
+    def _chunked_download(self, url, path, filename):
         pass
 
     def downloading(self):  # 下载文件

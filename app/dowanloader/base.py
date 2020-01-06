@@ -11,14 +11,14 @@ class BaseDownloader:
         self.timeout = config.get(down, 'timeout')
         self.chunk_size = config.get(down, 'chunk_size')
         self.default_path = config.get(down, 'default_path')
-        self._checkIfExists()
+        self._check_if_exists()
 
-    def _checkIfExists(self):
+    def _check_if_exists(self):
         if not os.path.exists(self.default_path):
             os.makedirs(self.default_path, exist_ok=True)
 
-    def preProgress(self):
+    def pre_progress(self):
         pass
 
-    def postProgress(self):
+    def post_progress(self):
         pass
