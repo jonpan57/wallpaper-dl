@@ -1,5 +1,6 @@
 import requests
 import mimetypes
+
 # mt = mimetypes.guess_extension('image/jpeg')
 # session = requests.Session()
 # resp = session.head(
@@ -10,7 +11,18 @@ import mimetypes
 # print(resp.cookies)
 
 
-import config
+# def test(a, b, **c):
+#     print(a)
+#     print(b)
+#     print(c.get('test'))
+#
+#
+# d = {'test': 123}
+# test(1, 2)
 
-s = config.getConfig('downloader', 'chunk_size')
-print(s)
+import os
+from . import config
+
+default_path = config.get('downloader', 'default_path')
+if not os.exists(default_path):
+    os.makedirs(default_path, exists=True)

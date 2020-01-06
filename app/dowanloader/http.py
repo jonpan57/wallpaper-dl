@@ -1,29 +1,37 @@
-import requests
-import tqdm
-import re
 import os
+import re
+import requests
+import mimetypes
 
 from .base import BaseDownloader
 
 
 class HttpDownloader(BaseDownloader):
-    def _init__(self, url, path, filename=None):
-        self.url = url  # 下载地址
-        self.path = path  # 下载路径
-        self.response = self.getResponse()  # 响应头
-        self.filename = self.getFilename(filename)  # 文件名
+    def __init__(self, extractor):
+        super().__init__(extractor)
 
-    def getResponse(self):
+    def download(self, url, **options):
+        response = self._getResponse(url)
+        path = self._getPath(options.get('path'))
+        filename = self._getFilename(url, options.get('filename'))
+
+    def _getResponse(self, url):
         try:
-            resp = requests.head(self.url, timeout=5)
+            resp = self.session.head(url, timeout=self.timeout)
         except:
             pass  # 判断是否能下载的，需补充
         else:
             return resp
 
-    def getFilename(self, filename):  # 获取下载文件名的多种方式及优先级：用户自定义 > Content-Disposition > url路径定义
-        if filename:  # 以后可以添加文件名合法性判断
-            filename = filename
+    def _getPath(self, path):
+        if path:
+            return path
+        else:
+            return self.default_path
+
+    def _getFilename(self, url, filename):  # 获取下载文件名的多种方式及优先级：用户自定义 > Content-Disposition > url路径定义
+        if filename:
+            filename = filename + mimetypes.guess_type(response.headers['Content-Type'])
         elif 'Content-Disposition' in self.response.headers:
             content = self.response.headers.get('Content-Disposition')
             filename = re.search(r'filename="(.+?)"', content).group(1)
@@ -39,7 +47,7 @@ class HttpDownloader(BaseDownloader):
             total_size = 0
         return total_size
 
-    def donwload(self):  # 下载文件
+    def donwload2(self):  # 下载文件
         chunk_size = 1024  # 设置每次写入块大小
         total_size = self.getFilesize()  # 关于从网页得到文件大小为零的情况，还需要再判断，后期补充
 

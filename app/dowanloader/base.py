@@ -1,37 +1,26 @@
+import os
 import logging
-import mimetypes
 from .. import config
 
-section = 'downloader'
+down = 'downloader'
 
 
 class BaseDownloader:
     def __init__(self, extractor):
-        self._session = extractor.session
+        self.session = extractor.session
+        self.timeout = config.get(down, 'timeout')
+        self.chunk_size = config.get(down, 'chunk_size')
+        self.default_path = config.get(down, 'default_path')
 
-        self._chunk_size = config.get(section, 'chunk_size')
+    def checkIfExists(self):
+        if not os.exists(self.default_path):
+            os.makedirs(self.default_path, exists=True)
 
-    def download(self, url, path, options=None):
-        self._preProgress()
-        if options is None:
-            options = {}
-        total_size = None
-        response = self._session.head(url)
-        filename = self.getFilename(response, options.get('filename'))
-        self._postProgress()
-
-    def getFilename(self, response, filename=None):
-        if filename:
-            content_type = response.headers['Content-Type']
-            filename = filename + mimetypes.guess_type(content_type)
-
-        else:
-            pass
-
-        return filename
-
-    def _preProgress(self):
+    def download(self, url, path, **options):
         pass
 
-    def _postProgress(self):
+    def preProgress(self):
+        pass
+
+    def postProgress(self):
         pass
