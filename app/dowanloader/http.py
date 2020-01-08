@@ -4,11 +4,11 @@ import tqdm
 import requests
 import mimetypes
 
-from .base import BaseDownloader
+from .base import Downloader
 from .. import util
 
 
-class HttpDownloader(BaseDownloader):
+class HttpDownloader(Downloader):
     def __init__(self, extractor):
         super().__init__(extractor)
         self.pathfmt = util.PathFormat(extractor)
