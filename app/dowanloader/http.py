@@ -5,11 +5,13 @@ import requests
 import mimetypes
 
 from .base import BaseDownloader
+from .. import util
 
 
 class HttpDownloader(BaseDownloader):
     def __init__(self, extractor):
         super().__init__(extractor)
+        self.pathfmt = util.PathFormat(extractor)
 
     def download(self, url, **options):
         response = self._get_response(url)
