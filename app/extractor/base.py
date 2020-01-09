@@ -5,7 +5,7 @@ from .. import config
 
 
 class Extractor:
-    _section = 'extractor'
+    _section = 'Extractor'
 
     def __init__(self, url, **options):
         self.url = url
@@ -36,4 +36,6 @@ class Extractor:
         pass
 
     def _init_proxies(self):
-        pass
+        proxies = self.config('Proxy')
+        if proxies:
+            self.session.proxies = eval('{' + proxies + '}')

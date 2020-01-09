@@ -4,7 +4,7 @@ from .. import config
 
 
 class Downloader:
-    _section = 'downloader'
+    _section = 'Downloader'
 
     def __init__(self, extractor):
         self.session = extractor.session
