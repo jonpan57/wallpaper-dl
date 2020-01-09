@@ -6,6 +6,7 @@ down = 'downloader'
 
 
 class Downloader:
+
     def __init__(self, extractor):
         self.session = extractor.session
         self.timeout = config.get(down, 'timeout')

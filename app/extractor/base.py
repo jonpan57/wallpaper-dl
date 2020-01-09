@@ -5,6 +5,8 @@ from .. import config
 
 
 class Extractor:
+    section = 'extractor'
+
     def __init__(self, url, **options):
         self.url = url
         self.session = requests.Session()
@@ -12,6 +14,13 @@ class Extractor:
         self._init_headers()
         self._init_cookies()
         self._init_proxies()
+
+    def config(self, option, value=None):
+        if not value:
+            return config.get(self.section, option)
+        else:
+            config.write(self.section, option, value)
+            return config.get(self.section, option)
 
     def _init_headers(self):
         headers = self.session.headers
