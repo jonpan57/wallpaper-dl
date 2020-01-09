@@ -2,17 +2,23 @@ import os
 import logging
 from .. import config
 
-down = 'downloader'
-
 
 class Downloader:
+    _section = 'downloader'
 
     def __init__(self, extractor):
         self.session = extractor.session
-        self.timeout = config.get(down, 'timeout')
-        self.chunk_size = config.get(down, 'chunk_size')
-        self.default_path = config.get(down, 'default_path')
+        self.timeout = self.config('timeout')
+        self.chunk_size = self.config('chunk_size')
+        self.default_path = self.config('default_path')
         self._check_if_exists()
+
+    def config(self, option, value=None):
+        if value:
+            config.write(self._section, option, value)
+            return config.get(self._section, option)
+        else:
+            return config.get(self._section, option)
 
     def _check_if_exists(self):
         if not os.path.exists(self.default_path):

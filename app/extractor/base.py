@@ -5,7 +5,7 @@ from .. import config
 
 
 class Extractor:
-    section = 'extractor'
+    _section = 'extractor'
 
     def __init__(self, url, **options):
         self.url = url
@@ -16,16 +16,21 @@ class Extractor:
         self._init_proxies()
 
     def config(self, option, value=None):
-        if not value:
-            return config.get(self.section, option)
+        if value:
+            config.write(self._section, option, value)
+            return config.get(self._section, option)
         else:
-            config.write(self.section, option, value)
-            return config.get(self.section, option)
+            return config.get(self._section, option)
 
     def _init_headers(self):
         headers = self.session.headers
         headers.clear()
-        headers['User-Agent'] = config.get('')
+        headers['User-Agent'] = self.config('User-Agent')
+        headers['Accept'] = self.config('Accept')
+        headers['Accept-Language'] = self.config('Accept-Language')
+        headers['Accept-Encoding'] = self.config('Accept-Encoding')
+        headers['Connection'] = self.config('Connection')
+        headers['Upgrade-Insecure-Requests'] = self.config('Upgrade-Insecure-Requests')
 
     def _init_cookies(self):
         pass
