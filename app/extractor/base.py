@@ -11,6 +11,8 @@ class Extractor:
         self.url = url
         self.session = requests.Session()
 
+        self._cookiefile = None
+        self._cookiejar = self.session.cookies
         self._init_headers()
         self._init_cookies()
         self._init_proxies()
@@ -33,9 +35,9 @@ class Extractor:
         headers['Upgrade-Insecure-Requests'] = self.config('Upgrade-Insecure-Requests')
 
     def _init_cookies(self):
-        pass
+        cookies = self.config('Cookie')
 
     def _init_proxies(self):
         proxies = self.config('Proxy')
         if proxies:
-            self.session.proxies = eval('{' + proxies + '}')
+            self.session.proxies = eval(proxies)
