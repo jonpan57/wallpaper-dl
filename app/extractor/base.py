@@ -7,12 +7,14 @@ from .. import config
 class Extractor:
     _section = 'Extractor'
 
+    cookie_domain = ''
+
     def __init__(self, url, **options):
         self.url = url
         self.session = requests.Session()
 
-        self._cookiefile = None
-        self._cookiejar = self.session.cookies
+        self._cookie_file = None
+        self._cookie_jar = self.session.cookies
         self._init_headers()
         self._init_cookies()
         self._init_proxies()
@@ -36,6 +38,15 @@ class Extractor:
 
     def _init_cookies(self):
         cookies = self.config('Cookie')
+        if isinstance(eval(cookies, dict)):
+            set_cookie = self._cookie_jar.set
+            for name, value in cookies:
+                set_cookie(name, value, domain=self.cookie_domain)
+        elif isinstance(eval(cookies), str):
+            pass
+        else:
+            pass
+
 
     def _init_proxies(self):
         proxies = self.config('Proxy')
