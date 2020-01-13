@@ -37,18 +37,27 @@ class Extractor:
         headers['Upgrade-Insecure-Requests'] = self.config('Upgrade-Insecure-Requests')
 
     def _init_cookies(self):
-        cookies = self.config('Cookie')
-        if isinstance(eval(cookies, dict)):
-            set_cookie = self._cookie_jar.set
-            for name, value in cookies:
-                set_cookie(name, value, domain=self.cookie_domain)
-        elif isinstance(eval(cookies), str):
-            pass
-        else:
-            pass
+        if self.cookie_domain is None:
+            return
 
+        cookies = self.config('Cookie')
+        if cookies:
+            if isinstance(eval(cookies, dict)):
+                self._update_cookie_dict(cookies, self.cookie_domain)
+            elif isinstance(eval(cookies), str):  # 以后待补充
+                pass
+            else:
+                pass
 
     def _init_proxies(self):
         proxies = self.config('Proxy')
         if proxies:
             self.session.proxies = eval(proxies)
+
+    def _update_cookie_dict(self, cookies, cookie_domain):
+        set_cookie = self._cookie_jar.set
+        for name, value in cookies:
+            set_cookie(name, value, domain=cookie_domain)
+
+    def _update_cookie_file(self, cookie_file):
+        pass
