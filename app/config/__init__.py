@@ -20,7 +20,8 @@ def write(section, option, value):
     if not cfg.has_section(section):
         cfg.add_section(section)
     cfg.set(section, option, value)
-    cfg.write(open(cfg_path, 'w'))
+    with open(cfg_path, 'w') as file:
+        cfg.write(file)
 
 
 def remove(section, option):
