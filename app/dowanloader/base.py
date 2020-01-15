@@ -8,9 +8,13 @@ class Downloader:
 
     def __init__(self, extractor):
         self.session = extractor.session
-        self.timeout = self.config('timeout')
-        self.chunk_size = self.config('chunk_size')
-        self.default_path = self.config('default_path')
+
+        self._retries = self.config('retries')
+        self._timeout = self.config('timeout')
+        self._verify = self.config('verify')
+
+        self._chunk_size = self.config('chunk_size')
+        self._default_path = self.config('default_path')
         self._check_if_exists()
 
     def config(self, option, value=None):
