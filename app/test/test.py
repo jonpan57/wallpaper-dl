@@ -4,21 +4,20 @@
 # if not os.path.exists(default_path):
 #     os.makedirs(default_path, exist_ok=True)
 
-from ..config import *
-
-
+import bs4
+import lxml
 import requests
 import mimetypes
 
 mt = mimetypes.guess_extension('image/jpeg')
 session = requests.Session()
 
-jar = session.cookies
-print(jar)
-session.get('https://www.baidu.com')
-print(jar)
-jar.set('__cfduid', 'd72d21c2138ff73a2485afa697abac3f91578720262', domain='.baidu.com')
-print(jar)
+response = session.get('https://bing.ioliu.cn')
+bs = bs4.BeautifulSoup(response.text, 'lxml')
+links = bs.find_all('img')
+for link in links:
+    l=link.get('src')
+    print(l)
 
 # import configparser
 #

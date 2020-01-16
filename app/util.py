@@ -1,12 +1,17 @@
 import os
+import re
+import mimetypes
 
 
 class PathFormat:
     def __init__(self, extractor):
         self.session = extractor.session
         self.default_path = extractor.config('default_path')
-        self.file_path = None
-        self.file_name = None
+
+    def format(self, response, path=None, filename=None):
+        path = self._get_file_path(path)
+        filename = self._get_file_name(response, filename)
+        return path + filename
 
     def _get_file_path(self, path):
         if path:

@@ -6,7 +6,6 @@ from .. import config
 
 class Extractor:
     _section = 'Extractor'
-
     cookie_domain = ''
 
     def __init__(self, url, **options):
