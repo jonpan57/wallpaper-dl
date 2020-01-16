@@ -41,7 +41,7 @@ class Extractor:
 
         cookies = self.config('Cookie')
         if cookies:
-            if isinstance(eval(cookies, dict)):
+            if isinstance(eval(cookies), dict):
                 self._update_cookie_dict(cookies, self.cookie_domain)
             elif isinstance(eval(cookies), str):  # 以后待补充
                 pass
