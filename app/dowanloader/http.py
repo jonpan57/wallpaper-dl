@@ -4,7 +4,7 @@ import tqdm
 import requests
 import mimetypes
 
-from .base import Downloader
+from .common import Downloader
 from .. import util
 
 

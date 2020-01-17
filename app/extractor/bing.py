@@ -1,13 +1,13 @@
 import os
 import bs4
 import lxml
-from ..extractor.base import Extractor
+from ..extractor.common import Extractor
 from ..dowanloader.http import HttpDownloader
 
 
 class BingExtractor(Extractor):
     _section = 'BingExtractor'
-    image_link = []
+    link_list = []
 
     def __init__(self, url, **options):
         super().__init__(url, **options)
@@ -15,22 +15,27 @@ class BingExtractor(Extractor):
         self._crawl_image_link()
 
     def _crawl_image_link(self):
-        flag = True
-        while flag:
+        last_page = False
+        while not last_page:
             response = self.session.get(url=self.url)
-            current_page = os.path.basename(self.url)
-            next_page = self._find_next_page(response.text)
-            if current_page == next_page:
-                flag = False
+            bs = bs4.BeautifulSoup(response.text, 'lxml')
+            self._find_page_link(bs)
+            next_page = self._find_next_page(bs)
+            if next_page is None:
+                last_page = True
             else:
-                pass
+                self.url = next_page
 
-    def image(self, text):
-        bs = bs4.BeautifulSoup(text, 'lxml')
-        bs.find_all('img').get('src')
+    def _find_page_link(self, bs):
+        links = bs.find_all('img', class_='alignleft wp-post-image')
+        for link in links:
+            temp = link.get('src')
+            self.link_list.append(temp.replace('-300x200', ''))
 
-    def _find_next_page(self, text):
-        bs = bs4.BeautifulSoup(text, 'lxml')
-        page_tag = bs.find('div', class_='page').find('span').get_text()
-        max_page = int(page_tag.split('/')[1])
-        return max_page
+    def _find_next_page(self, bs):
+        temp = bs.find('div', class_='next page-numbers')
+        if temp:
+            next_page = temp.get('href')
+            return next_page
+        else:
+            return None
