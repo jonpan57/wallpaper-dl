@@ -9,10 +9,11 @@ class Downloader:
     def __init__(self, extractor):
         self.session = extractor.session
 
-        self._retries = self.config('retries')
-        self._timeout = self.config('timeout')
-        self._verify = self.config('verify')
-        self._chunk_size = self.config('chunk_size')
+        self._retries = self.config('Retries')
+        self._timeout = self.config('Timeout')
+        self._steam = self.config('Steam')
+        self._verify = self.config('Verify')
+        self._chunk_size = self.config('Chunk_size')
 
     def config(self, option, value=None):
         if value:

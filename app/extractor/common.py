@@ -1,14 +1,14 @@
 # extractor类，解决登录和解析网址
 import requests
 
-from .. import config
+import app.config as config
 
 
 class Extractor:
     _section = 'Extractor'
     cookie_domain = ''
 
-    def __init__(self, url, **options):
+    def __init__(self, url):
         self.url = url
         self.session = requests.Session()
 
@@ -29,6 +29,7 @@ class Extractor:
         headers = self.session.headers
         headers.clear()
         headers['User-Agent'] = self.config('User-Agent')
+        print(headers)
         headers['Accept'] = self.config('Accept')
         headers['Accept-Language'] = self.config('Accept-Language')
         headers['Accept-Encoding'] = self.config('Accept-Encoding')
