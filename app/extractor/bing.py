@@ -12,17 +12,18 @@ class BingExtractor(Extractor):
     def __init__(self, url, **options):
         super().__init__(url, **options)
         self.root = url
+        self.default_path = self.config('default_path')
         self._crawl_image_link()
 
     def _crawl_image_link(self):
-        last_page = False
-        while not last_page:
+        is_last_page = False
+        while not is_last_page:
             response = self.session.get(url=self.url)
             bs = bs4.BeautifulSoup(response.text, 'lxml')
             self._find_page_link(bs)
             next_page = self._find_next_page(bs)
             if next_page is None:
-                last_page = True
+                is_last_page = True
             else:
                 self.url = next_page
 

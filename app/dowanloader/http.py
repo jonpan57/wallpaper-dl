@@ -13,7 +13,7 @@ class HttpDownloader(Downloader):
         super().__init__(extractor)
         self.pathfmt = util.PathFormat(extractor)
 
-    def download(self, url, **options):
+    def _start_download(self, url, **options):
         response = self._get_response(url)
 
         if response and response.status_code == requests.codes.ok:
@@ -30,8 +30,8 @@ class HttpDownloader(Downloader):
         try:
             response = self.session.head(url, timeout=self._timeout)
 
-        except ConnectionError:
-            print(url + ' --> Connection Timeout !')
+        except Exception as e:
+            raise e
             return None
 
         else:

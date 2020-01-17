@@ -21,14 +21,14 @@ class Downloader:
         else:
             return config.get(self._section, option)
 
-    def download(self, url, pathname):
+    def download(self, url, **options):
         # 以后加入覆盖下载和中止下载选项
         try:
-            self._start_download(url, pathname)
-        except KeyboardInterrupt as e:
+            self._start_download(url, **options)
+        except Exception as e:
             raise e
 
-    def _start_download(self, url, pathname):
+    def _start_download(self, url, **options):
         pass
 
     def _end_download(self):
