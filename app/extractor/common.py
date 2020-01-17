@@ -1,7 +1,7 @@
 # extractor类，解决登录和解析网址
 import requests
 
-from ..configuration import config
+import app.configuration.config as config
 
 print(config.get('Downloader', 'Retries'))
 
