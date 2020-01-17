@@ -1,7 +1,6 @@
-import os
 import configparser
 
-cfg_path = 'cfg.ini'
+cfg_path = '/home/administrator/PycharmProjects/wallpaper-downloader/app/configuration/cfg.ini'
 
 cfg = configparser.ConfigParser()
 cfg.read(cfg_path)
@@ -31,3 +30,6 @@ def remove(section, option):
         cfg.write(open(cfg_path, 'w'))
     else:
         pass
+
+
+print(get('Downloader', 'Retries'))

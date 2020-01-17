@@ -1,6 +1,6 @@
 import os
 import logging
-from .. import config
+from app.configuration import config
 
 
 class Downloader:

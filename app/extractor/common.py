@@ -1,7 +1,9 @@
 # extractor类，解决登录和解析网址
 import requests
 
-import app.config as config
+from ..configuration import config
+
+print(config.get('Downloader', 'Retries'))
 
 
 class Extractor:
@@ -14,11 +16,12 @@ class Extractor:
 
         self._cookie_file = None
         self._cookie_jar = self.session.cookies
+
         self._init_headers()
         self._init_cookies()
         self._init_proxies()
 
-    def config(self, option, value=None):
+    def configure(self, option, value=None):
         if value:
             config.write(self._section, option, value)
             return config.get(self._section, option)
@@ -28,19 +31,19 @@ class Extractor:
     def _init_headers(self):
         headers = self.session.headers
         headers.clear()
-        headers['User-Agent'] = self.config('User-Agent')
+        headers['User-Agent'] = self.configure('User-Agent')
+        headers['Accept'] = self.configure('Accept')
+        headers['Accept-Language'] = self.configure('Accept-Language')
+        headers['Accept-Encoding'] = self.configure('Accept-Encoding')
+        headers['Connection'] = self.configure('Connection')
+        headers['Upgrade-Insecure-Requests'] = self.configure('Upgrade-Insecure-Requests')
         print(headers)
-        headers['Accept'] = self.config('Accept')
-        headers['Accept-Language'] = self.config('Accept-Language')
-        headers['Accept-Encoding'] = self.config('Accept-Encoding')
-        headers['Connection'] = self.config('Connection')
-        headers['Upgrade-Insecure-Requests'] = self.config('Upgrade-Insecure-Requests')
 
     def _init_cookies(self):
         if self.cookie_domain is None:
             return
 
-        cookies = self.config('Cookie')
+        cookies = self.configure('Cookie')
         if cookies:
             if isinstance(eval(cookies), dict):
                 self._update_cookie_dict(cookies, self.cookie_domain)
@@ -50,7 +53,7 @@ class Extractor:
                 pass
 
     def _init_proxies(self):
-        proxies = self.config('Proxy')
+        proxies = self.configure('Proxy')
         if proxies:
             self.session.proxies = eval(proxies)
 

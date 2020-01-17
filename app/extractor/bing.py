@@ -12,7 +12,7 @@ class BingExtractor(Extractor):
     def __init__(self, url, **options):
         super().__init__(url, **options)
         self.root = url
-        self.default_path = self.config('Default_path')
+        self.default_path = self.configure('Default_path')
 
         self._crawl_image_link()
 
