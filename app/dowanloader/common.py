@@ -1,12 +1,12 @@
 import os
 import logging
-from app.configuration import config
+from app import config
 
 
 class Downloader:
-    _section = 'Downloader'
 
     def __init__(self, extractor):
+        self._section = 'Downloader'
         self.session = extractor.session
 
         self._retries = self.config('Retries')

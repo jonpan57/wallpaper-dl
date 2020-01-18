@@ -1,24 +1,25 @@
 import os
 import bs4
 import lxml
-from ..extractor.common import Extractor
+from .common import Extractor
 from ..dowanloader.http import HttpDownloader
 
 
 class BingExtractor(Extractor):
-    _section = 'BingExtractor'
     link_list = []
 
-    def __init__(self, url, **options):
-        super().__init__(url, **options)
+    def __init__(self, url):
+        super().__init__(url)
+        self._section = 'Bing'
         self.root = url
-        self.default_path = self.configure('Default_path')
-
+        self.default_path = self.config('Default_path')
         self._crawl_image_link()
+        print(self.link_list)
 
     def _crawl_image_link(self):
         is_last_page = False
         while not is_last_page:
+            print(self.url)
             response = self.session.get(url=self.url)
             bs = bs4.BeautifulSoup(response.text, 'lxml')
             self._find_page_link(bs)
@@ -35,7 +36,8 @@ class BingExtractor(Extractor):
             self.link_list.append(temp.replace('-300x200', ''))
 
     def _find_next_page(self, bs):
-        temp = bs.find('div', class_='next page-numbers')
+        temp = bs.find('a', class_='next page-numbers')
+        # print(temp)
         if temp:
             next_page = temp.get('href')
             return next_page

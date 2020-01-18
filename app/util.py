@@ -6,7 +6,7 @@ import mimetypes
 class PathFormat:
     def __init__(self, extractor):
         self.session = extractor.session
-        self.default_path = extractor.configure('Default_path')
+        self.default_path = extractor.config('Default_path')
         print(self.default_path)
         # self._check_if_exists()
 
