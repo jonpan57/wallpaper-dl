@@ -14,7 +14,6 @@ class BingExtractor(Extractor):
         self.root = url
         self.default_path = self.config('Default_path')
         self._crawl_image_link()
-        print(self.link_list)
 
     def _crawl_image_link(self):
         is_last_page = False
@@ -36,10 +35,9 @@ class BingExtractor(Extractor):
             self.link_list.append(temp.replace('-300x200', ''))
 
     def _find_next_page(self, bs):
-        temp = bs.find('a', class_='next page-numbers')
-        # print(temp)
-        if temp:
-            next_page = temp.get('href')
+        next = bs.find('a', class_='next page-numbers')
+        if next:
+            next_page = next.get('href')
             return next_page
         else:
             return None
