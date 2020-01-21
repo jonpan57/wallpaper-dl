@@ -5,13 +5,14 @@ from app import config
 
 
 class Extractor:
-    _category = 'Extractor'
-
-
+    _category = 'extractor'
+    _directory_fmt = '{category}'
+    _filename_fmt = '{filename}.{extension}'
     cookie_domain = ''
-    def __init__(self, url):
 
-        self.url = url
+    root = ''
+
+    def __init__(self, url):
         self.session = requests.Session()
 
         self._cookie_jar = self.session.cookies

@@ -11,13 +11,13 @@ from .. import util
 class HttpDownloader(Downloader):
     def __init__(self, extractor):
         super().__init__(extractor)
-        self.pathfmt = util.PathFormat(extractor)
+        self.path_fmt = util.PathFormat(extractor)
 
     def _start_download(self, url, **options):
         response = self._get_response(url)
 
         if response.status_code == requests.codes.ok:
-            pathname = self.pathfmt.format(response, options.get('path'), options.get('filename'))
+            pathname = self.path_fmt.format(response, options.get('path'), options.get('filename'))
 
             if response.headers.get('Accept-Ranges') == 'bytes':  # 支持断点续传的标志，同时也可以多线程下载
                 total_size = self._get_file_size(response)

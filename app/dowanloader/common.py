@@ -6,7 +6,7 @@ from app import config
 class Downloader:
 
     def __init__(self, extractor):
-        self._section = 'Downloader'
+        self._section = 'downloader'
         self.session = extractor.session
 
         self._retries = self.config('Retries')

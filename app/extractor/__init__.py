@@ -1,7 +1,7 @@
 import os
 import configparser
 
-cfg_path = 'cfg.ini'
+cfg_path = 'config.ini'
 
 cfg = configparser.ConfigParser()
 cfg.read(cfg_path)

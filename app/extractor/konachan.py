@@ -9,7 +9,7 @@ class KonachanExtractor(Extractor):
 
     def __init__(self, url):
         super().__init__(url)
-        self._section = 'Konachan'
+        self._section = 'konachan'
         self.root = url
         self.default_path = self.config('Default_path')
         self._crawl_image_link()

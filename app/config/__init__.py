@@ -1,10 +1,10 @@
 import os
 import configparser
 
-cfg_path = '/home/administrator/PycharmProjects/wallpaper-downloader/app/config/cfg.ini'
+config_path = '/home/administrator/PycharmProjects/wallpaper-downloader/app/config/config.ini'
 
 cfg = configparser.ConfigParser()
-cfg.read(cfg_path)
+cfg.read(config_path)
 
 
 def get(section, option):
@@ -20,13 +20,13 @@ def write(section, option, value):
     if not cfg.has_section(section):
         cfg.add_section(section)
     cfg.set(section, option, value)
-    cfg.write(open(cfg_path, 'w'))
+    cfg.write(open(config_path, 'w'))
 
 
 def remove(section, option):
     # 检查配置组是否存在，存在则删除配置项，否则不操作
     if cfg.has_section(section):
         cfg.remove_option(section, option)
-        cfg.write(open(cfg_path, 'w'))
+        cfg.write(open(config_path, 'w'))
     else:
         pass
