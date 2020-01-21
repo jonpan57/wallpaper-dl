@@ -6,14 +6,14 @@ from ..dowanloader.http import HttpDownloader
 
 
 class BingExtractor(Extractor):
+    _category = 'Bing'
     link_list = []
-
     def __init__(self, url):
         super().__init__(url)
-        self._section = 'Bing'
         self.root = url
         self.default_path = self.config('Default_path')
         self._crawl_image_link()
+        print(self.link_list)
 
     def _crawl_image_link(self):
         is_last_page = False
@@ -35,9 +35,8 @@ class BingExtractor(Extractor):
             self.link_list.append(temp.replace('-300x200', ''))
 
     def _find_next_page(self, bs):
-        next = bs.find('a', class_='next page-numbers')
-        if next:
-            next_page = next.get('href')
-            return next_page
+        next_page = bs.find('a', class_='next page-numbers')
+        if next_page:
+            return next_page.get('href')
         else:
             return None

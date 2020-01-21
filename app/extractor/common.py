@@ -5,10 +5,11 @@ from app import config
 
 
 class Extractor:
-    cookie_domain = ''
+    _category = 'Extractor'
 
+
+    cookie_domain = ''
     def __init__(self, url):
-        self._section = 'Extractor'
 
         self.url = url
         self.session = requests.Session()
@@ -22,10 +23,10 @@ class Extractor:
 
     def config(self, option, value=None):
         if value:
-            config.write(self._section, option, value)
-            return config.get(self._section, option)
+            config.write(self._category, option, value)
+            return config.get(self._category, option)
         else:
-            return config.get(self._section, option)
+            return config.get(self._category, option)
 
     def _init_headers(self):
         headers = self.session.headers
