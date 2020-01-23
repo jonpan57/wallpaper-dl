@@ -16,12 +16,12 @@
 import logging
 
 
-def test():
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(filename)s')
-    sh = logging.StreamHandle()
+def testing():
+    formatter = logging.Formatter('%(asctime)s - %(name)s - file:%(filename)s, line %(lineno)d, in %(module)s %(funcName)s')
+    sh = logging.StreamHandler()
 
     sh.setFormatter(formatter)
-    log = logging.getLogger('test')
+    log = logging.getLogger('test123')
     log.setLevel(logging.DEBUG)
     log.addHandler(sh)
     log.info('test1')
@@ -30,4 +30,4 @@ def test():
     log.error('test4')
 
 
-test()
+testing()
