@@ -11,6 +11,7 @@ from .. import util
 class HttpDownloader(Downloader):
     def __init__(self, extractor):
         super().__init__(extractor)
+
         self.path_fmt = util.PathFormat(extractor)
 
     def _start_download(self, url, **options):

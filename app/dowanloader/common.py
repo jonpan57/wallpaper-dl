@@ -4,9 +4,10 @@ from app import config
 
 
 class Downloader:
+    category = 'downloader'
 
     def __init__(self, extractor):
-        self._section = 'downloader'
+
         self.session = extractor.session
 
         self._retries = self.config('Retries')
@@ -17,10 +18,10 @@ class Downloader:
 
     def config(self, option, value=None):
         if value:
-            config.write(self._section, option, value)
-            return config.get(self._section, option)
+            config.write(self.category, option, value)
+            return config.get(self.category, option)
         else:
-            return config.get(self._section, option)
+            return config.get(self.category, option)
 
     def download(self, url, **options):
         # 以后加入覆盖下载和中止下载选项

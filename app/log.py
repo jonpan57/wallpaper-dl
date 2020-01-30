@@ -1,7 +1,7 @@
 import os
 import logging
 
-log_path = '/home/administrator/PycharmProjects/wallpager-download-tool/app/log/'
+log_path = 'app/log/'
 
 """
 %(asctime)s     :   日志的时间

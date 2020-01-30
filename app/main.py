@@ -10,7 +10,6 @@ from app.dowanloader.http import HttpDownloader
 bing = BingExtractor()
 # downloader = HttpDownloader(bing)
 
-# konachan = KonachanExtractor('https://www.konachan.com')
 
 if __name__ == '__main__':
     pass

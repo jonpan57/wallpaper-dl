@@ -6,7 +6,6 @@ from ..dowanloader.http import HttpDownloader
 
 
 class BingExtractor(Extractor):
-    category = 'bing'
     link_list = []
 
     root = 'https://www.bingwallpaperhd.com'
@@ -14,19 +13,21 @@ class BingExtractor(Extractor):
     def __init__(self):
         super().__init__()
 
+        self.category = 'bing'
         self.root = self.config('Root')
+        self._get_image_link()
 
-        self._crawl_image_link()
-
-    def _crawl_image_link(self):
+    def _get_image_link(self):
         url = self.root
         is_last_page = False
         while not is_last_page:
             print(url)
             response = self.session.get(url=url)
             bs = bs4.BeautifulSoup(response.text, 'lxml')
+
             self._find_page_link(bs)
             next_page = self._find_next_page(bs)
+
             if next_page is None:
                 is_last_page = True
             else:
