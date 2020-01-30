@@ -8,12 +8,14 @@ class Extractor:
     _category = 'extractor'
     _directory_fmt = '{category}'
     _filename_fmt = '{filename}.{extension}'
+
     cookie_domain = ''
 
     root = ''
 
     def __init__(self, url):
         self.session = requests.Session()
+        self.url = url
 
         self._cookie_jar = self.session.cookies
         self._cookie_file = None
