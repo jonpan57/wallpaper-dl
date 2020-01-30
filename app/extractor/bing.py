@@ -6,29 +6,31 @@ from ..dowanloader.http import HttpDownloader
 
 
 class BingExtractor(Extractor):
-    _category = 'bing'
+    category = 'bing'
     link_list = []
 
     root = 'https://www.bingwallpaperhd.com'
 
-    def __init__(self, url):
-        super().__init__(url)
-        self.default_path = self.config('Default_path')
+    def __init__(self):
+        super().__init__()
+
+        self.root = self.config('Root')
+
         self._crawl_image_link()
-        print(self.link_list)
 
     def _crawl_image_link(self):
+        url = self.root
         is_last_page = False
         while not is_last_page:
-            print(self.url)
-            response = self.session.get(url=self.url)
+            print(url)
+            response = self.session.get(url=url)
             bs = bs4.BeautifulSoup(response.text, 'lxml')
             self._find_page_link(bs)
             next_page = self._find_next_page(bs)
             if next_page is None:
                 is_last_page = True
             else:
-                self.url = next_page
+                url = next_page
 
     def _find_page_link(self, bs):
         links = bs.find_all('img', class_='alignleft wp-post-image')

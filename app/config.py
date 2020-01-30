@@ -1,7 +1,7 @@
 import os
 import configparser
 
-config_path = r'\cfg.ini'
+config_path = r'/home/administrator/PycharmProjects/wallpager-download-tool/app/cfg.ini'
 
 cfg = configparser.ConfigParser()
 cfg.read(config_path)

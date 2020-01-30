@@ -5,17 +5,17 @@ from app import config
 
 
 class Extractor:
-    _category = 'extractor'
-    _directory_fmt = '{category}'
-    _filename_fmt = '{filename}.{extension}'
+    category = 'extractor'
+
+    directory_fmt = '{category}'
+    filename_fmt = '{filename}.{extension}'
 
     cookie_domain = ''
 
     root = ''
 
-    def __init__(self, url):
+    def __init__(self):
         self.session = requests.Session()
-        self.url = url
 
         self._cookie_jar = self.session.cookies
         self._cookie_file = None
@@ -26,10 +26,10 @@ class Extractor:
 
     def config(self, option, value=None):
         if value:
-            config.write(self._category, option, value)
-            return config.get(self._category, option)
+            config.write(self.category, option, value)
+            return config.get(self.category, option)
         else:
-            return config.get(self._category, option)
+            return config.get(self.category, option)
 
     def _init_headers(self):
         headers = self.session.headers

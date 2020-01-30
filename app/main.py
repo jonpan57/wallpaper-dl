@@ -7,7 +7,7 @@ from app.extractor.bing import BingExtractor
 from app.extractor.konachan import KonachanExtractor
 from app.dowanloader.http import HttpDownloader
 
-bing = BingExtractor('https://www.bingwallpaperhd.com')
+bing = BingExtractor()
 # downloader = HttpDownloader(bing)
 
 # konachan = KonachanExtractor('https://www.konachan.com')
