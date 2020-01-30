@@ -6,8 +6,8 @@ import mimetypes
 class PathFormat:
     def __init__(self, extractor):
         self.session = extractor.session
-        self.default_path = extractor.config('Default_path')
-        print(self.default_path)
+        self.path = extractor.category
+        print(self.path)
         # self._check_if_exists()
 
     def format(self, response, path=None, filename=None):
@@ -16,8 +16,8 @@ class PathFormat:
         return path + filename
 
     def _check_if_exists(self):
-        if not os.path.exists(self.default_path):
-            os.makedirs(self.default_path)
+        if not os.path.exists(self.path):
+            os.makedirs(self.path)
 
     def _get_file_path(self, path):
         if path:
@@ -26,7 +26,7 @@ class PathFormat:
             return path
 
         else:
-            return self.default_path
+            return self.path
 
     def _get_file_name(self, response, filename):
         # 获取下载文件名的多种方式及优先级：用户自定义 > Content-Disposition > url路径定义

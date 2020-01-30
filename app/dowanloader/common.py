@@ -10,8 +10,8 @@ class Downloader:
 
         self.session = extractor.session
 
-        self._retries = self.config('Retries')
-        self._timeout = self.config('Timeout')
+        self._retries = int(self.config('Retries'))
+        self._timeout = int(self.config('Timeout'))
         self._steam = self.config('Steam')
         self._verify = self.config('Verify')
         self._chunk_size = self.config('Chunk_size')
@@ -25,10 +25,13 @@ class Downloader:
 
     def download(self, url, **options):
         # 以后加入覆盖下载和中止下载选项
-        try:
-            self._start_download(url, **options)
-        except Exception as e:
-            raise e
+        # try:
+        #     self._start_download(url, **options)
+        # except Exception as e:
+        #     raise e
+        # else:
+        #     self._start_download(url, **options)
+        self._start_download(url, **options)
 
     def _start_download(self, url, **options):
         pass
