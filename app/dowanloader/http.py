@@ -28,7 +28,7 @@ class HttpDownloader(Downloader):
             else:
                 pass
         else:
-            print(url + ' --> Status Code ' + response.status_code)
+            print(url + ' --> Status Code ' + str(response.status_code))
 
     def _get_response(self, url):
         try:
@@ -56,16 +56,18 @@ class HttpDownloader(Downloader):
                 session = self.session
                 header = {'Range': 'bytes={}-'.format(temp_size)}
                 session.headers.update(header)
-                response = session.get(url, steam=self._steam, verify=self._verify)
+                print(session.headers)
+                response = session.get(url, stream=self._stream, verify=self._verify)
                 with open(pathname, 'ab') as f:
-                    for chunk in response.iter_content(chunk_size=self.chunk_size):
+                    for chunk in response.iter_content(chunk_size=self._chunk_size):
                         if chunk:
                             f.write(chunk)
                             f.flush()
         else:
-            response = self.session.get(url, steam=self._steam, verify=self._verify)
+            print(self.session.headers)
+            response = self.session.get(url, stream=self._stream, verify=self._verify)
             with open(pathname, 'wb') as f:
-                for chunk in response.iter_content(chunk_size=self.chunk_size):
+                for chunk in response.iter_content(chunk_size=self._chunk_size):
                     if chunk:
                         f.write(chunk)
                         f.flush()

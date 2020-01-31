@@ -12,9 +12,9 @@ class Downloader:
 
         self._retries = int(self.config('Retries'))
         self._timeout = int(self.config('Timeout'))
-        self._steam = self.config('Steam')
-        self._verify = self.config('Verify')
-        self._chunk_size = self.config('Chunk_size')
+        self._stream = bool(self.config('Stream'))
+        self._verify = bool(self.config('Verify'))
+        self._chunk_size = int(self.config('Chunk_size'))
 
     def config(self, option, value=None):
         if value:
