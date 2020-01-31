@@ -48,11 +48,15 @@ class HttpDownloader(Downloader):
             return 0
 
     def _range_download(self, url, pathname, total_size):
+        print(pathname)
         if os.path.exists(pathname):
             temp_size = os.path.getsize(pathname)
+            print(temp_size)
+            print(total_size)
             if temp_size < total_size:
                 pass
             else:
+                print(1)
                 session = self.session
                 header = {'Range': 'bytes={}-'.format(temp_size)}
                 session.headers.update(header)

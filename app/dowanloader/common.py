@@ -29,8 +29,6 @@ class Downloader:
             self._start_download(url, **options)
         except Exception as e:
             raise e
-        else:
-            self._start_download(url, **options)
 
     def _start_download(self, url, **options):
         pass

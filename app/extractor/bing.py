@@ -8,8 +8,6 @@ from ..dowanloader.http import HttpDownloader
 class BingExtractor(Extractor):
     link_list = []
 
-    root = 'https://www.bingwallpaperhd.com'
-
     def __init__(self):
         super().__init__()
 
