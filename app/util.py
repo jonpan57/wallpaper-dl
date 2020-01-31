@@ -7,10 +7,10 @@ class PathFormat:
     def __init__(self, extractor):
         self.session = extractor.session
         self.path = extractor.category
-        print(self.path)
-        # self._check_if_exists()
+        self._check_if_exists()
+        self._format()
 
-    def format(self, response, path=None, filename=None):
+    def _format(self, response, path=None, filename=None):
         path = self._get_file_path(path)
         filename = self._get_file_name(response, filename)
         return path + filename

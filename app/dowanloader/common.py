@@ -25,13 +25,12 @@ class Downloader:
 
     def download(self, url, **options):
         # 以后加入覆盖下载和中止下载选项
-        # try:
-        #     self._start_download(url, **options)
-        # except Exception as e:
-        #     raise e
-        # else:
-        #     self._start_download(url, **options)
-        self._start_download(url, **options)
+        try:
+            self._start_download(url, **options)
+        except Exception as e:
+            raise e
+        else:
+            self._start_download(url, **options)
 
     def _start_download(self, url, **options):
         pass
