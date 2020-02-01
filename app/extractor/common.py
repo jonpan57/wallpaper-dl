@@ -8,7 +8,7 @@ class Extractor:
     category = 'extractor'
 
     directory_fmt = '{category}'
-    filename_fmt = '{filename}.{extension}'
+    filename_fmt = '{filename}'
 
     cookie_domain = ''
 
