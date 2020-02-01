@@ -2,7 +2,6 @@ import os
 import re
 import tqdm
 import requests
-import mimetypes
 
 from .common import Downloader
 from .. import util
@@ -17,7 +16,10 @@ class HttpDownloader(Downloader):
     def _start_download(self, url, **options):
         response = self._get_response(url)
 
-        if response.status_code == requests.codes.ok:
+        if response is None:
+            print(url + ' --> Request Timeout')
+
+        elif response.status_code == requests.codes.ok:
             pathname = self.path_fmt.format(response, options.get('path'), options.get('filename'))
 
             if response.headers.get('Accept-Ranges') == 'bytes':  # 支持断点续传的标志，同时也可以多线程下载
@@ -27,6 +29,7 @@ class HttpDownloader(Downloader):
                 pass
             else:
                 pass
+
         else:
             print(url + ' --> Status Code ' + str(response.status_code))
 
@@ -51,25 +54,22 @@ class HttpDownloader(Downloader):
         print(pathname)
         if os.path.exists(pathname):
             temp_size = os.path.getsize(pathname)
-            print(temp_size)
-            print(total_size)
             if temp_size < total_size:
-                pass
-            else:
-                print(1)
-                session = self.session
                 header = {'Range': 'bytes={}-'.format(temp_size)}
-                session.headers.update(header)
-                print(session.headers)
-                response = session.get(url, stream=self._stream, verify=self._verify)
+                self.session.headers.update(header)
+                response = self.session.get(url, stream=self._stream, verify=self._verify)
+
                 with open(pathname, 'ab') as f:
                     for chunk in response.iter_content(chunk_size=self._chunk_size):
                         if chunk:
                             f.write(chunk)
                             f.flush()
+                self.session.headers.pop('Range')
+            else:
+                pass
         else:
-            print(self.session.headers)
             response = self.session.get(url, stream=self._stream, verify=self._verify)
+
             with open(pathname, 'wb') as f:
                 for chunk in response.iter_content(chunk_size=self._chunk_size):
                     if chunk:

@@ -7,27 +7,18 @@ class PathFormat:
     def __init__(self, extractor):
         self.session = extractor.session
         self.path = 'gallery/' + extractor.category + '/'
-        # self._check_if_exists()
 
     def format(self, response, path=None, filename=None):
         path = self._get_file_path(path)
         filename = self._get_file_name(response, filename)
         return path + filename
 
-    # def _check_if_exists(self):
-    #     if not os.path.exists(self.path):
-    #         os.makedirs(self.path)
-
     def _get_file_path(self, path):
-        if path:
-            if not os.path.exists(path):
-                os.makedirs(path)
-            return path
-
-        else:
-            if not os.path.exists(self.path):
-                os.makedirs(self.path)
-            return self.path
+        if path is None:
+            path = self.path
+        if not os.path.exists(path):
+            os.makedirs(path)
+        return path
 
     def _get_file_name(self, response, filename):
         # 获取下载文件名的多种方式及优先级：用户自定义 > Content-Disposition > url路径定义
