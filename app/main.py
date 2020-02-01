@@ -11,8 +11,7 @@ bing = BingExtractor()
 downloader = HttpDownloader(bing)
 for link in bing.link_list:
     print(link)
-    downloader.download(link)
-
+    downloader.download(link, filename='test')
 
 if __name__ == '__main__':
     pass

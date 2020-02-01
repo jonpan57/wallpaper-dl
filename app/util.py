@@ -9,7 +9,8 @@ class PathFormat:
         self.path = extractor.config('Directory')
         self.filename = extractor.filename
 
-    def format(self, response, path=None, filename=None):
+    def format(self, response, path, filename):
+        print(filename)
         path = self._get_file_path(path)
         filename = self._get_file_name(response, filename)
         return path + filename
