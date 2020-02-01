@@ -6,7 +6,7 @@ from ..dowanloader.http import HttpDownloader
 
 
 class BingExtractor(Extractor):
-    filename = '{year}-{month}-{filename}'
+    filename_fmt = '{year}-{month}-{filename}'
     link_list = []
 
     def __init__(self):

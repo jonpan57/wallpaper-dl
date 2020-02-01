@@ -7,7 +7,7 @@ class PathFormat:
     def __init__(self, extractor):
         self.session = extractor.session
         self.path = extractor.config('Directory')
-        self.filename = extractor.filename
+        self.filename = extractor.filename_fmt
 
     def format(self, response, path=None, filename=None):
         path = self._get_file_path(path)
@@ -23,7 +23,7 @@ class PathFormat:
         return path
 
     def _get_file_name(self, response, filename):
-        # 获取下载文件名的多种方式及优先级：用户自定义 > Content-Disposition > url路径定义
+        # 获取下载文件名的多种方式及优先级：用户自定义 > 默认自定义 > Content-Disposition > URL路径定义
         if filename or self.filename:
             if filename is None:
                 filename = self.filename
@@ -31,8 +31,7 @@ class PathFormat:
             return filename + extension
 
         elif 'Content-Disposition' in response.headers:
-            disposition = response.headers.get('Content-Disposition')
-            return re.search(r'filename="(.+?)"', disposition).group(1)
+            return re.search(r'filename="(.+?)"', response.headers.get('Content-Disposition')).group(1)
 
         else:
             return os.path.basename(response.request.url)
