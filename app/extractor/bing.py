@@ -37,9 +37,14 @@ class BingExtractor(Extractor):
             temp = link.get('src')
             self.link_list.append(temp.replace('-300x200', ''))
 
-    def _find_next_page(self, bs):
+    @staticmethod
+    def _find_next_page(bs):
         next_page = bs.find('a', class_='next page-numbers')
         if next_page:
             return next_page.get('href')
         else:
             return None
+
+    def filename(self, response):
+        url = response.request.url.split('/')
+        return self.filename_fmt.format(year=url[-3], month=url[-2], filename=url[-1])
