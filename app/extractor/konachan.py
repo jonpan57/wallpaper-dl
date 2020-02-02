@@ -5,6 +5,7 @@ from .common import Extractor
 
 
 class KonachanExtractor(Extractor):
+    filename_fmt = '{year}-{month}-{filename}'
     link_list = []
 
     def __init__(self, url):

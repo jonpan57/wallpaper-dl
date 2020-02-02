@@ -1,12 +1,9 @@
 import requests
+import mimetypes
 
+url = 'https://www.bingwallpaperhd.com/wp-content/uploads/2019/06/BiwaLake.jpg'
 session = requests.session()
-
-
-def test(a, **options):
-    b = options.get('file')
-    print(a)
-    print(b)
-
-
-test('12', file='312')
+response = session.head(url)
+ct = response.headers.get('Content-Type')
+ex=mimetypes.guess_extension(ct)
+print(ex)

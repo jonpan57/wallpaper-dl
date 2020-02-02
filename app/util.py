@@ -10,7 +10,6 @@ class PathFormat:
         self.filename = extractor.filename
 
     def format(self, response, path, filename):
-        print(filename)
         path = self._get_file_path(path)
         filename = self._get_file_name(response, filename)
         return path + filename
@@ -26,7 +25,7 @@ class PathFormat:
     def _get_file_name(self, response, filename):
         # 获取下载文件名的多种方式及优先级：用户自定义 > 默认自定义 > Content-Disposition > URL路径定义
         if filename:
-            extension = mimetypes.guess_type(response.headers.get('Content-Type'))
+            extension = mimetypes.guess_extension(response.headers.get('Content-Type'))
             return filename + extension
 
         elif self.filename:

@@ -1,10 +1,8 @@
 import os
-import re
-import tqdm
 import requests
 
 from .common import Downloader
-from .. import util
+from app import util
 
 
 class HttpDownloader(Downloader):
@@ -44,14 +42,14 @@ class HttpDownloader(Downloader):
         else:
             return response
 
-    def _get_file_size(self, response):  # 获取下载文件总大小
+    @staticmethod
+    def _get_file_size(response):  # 获取下载文件总大小
         if 'Content-Length' in response.headers:
             return int(response.headers.get('Content-Length'))
         else:
             return 0
 
     def _range_download(self, url, pathname, total_size):
-        print(pathname)
         if os.path.exists(pathname):
             temp_size = os.path.getsize(pathname)
             if temp_size < total_size:
