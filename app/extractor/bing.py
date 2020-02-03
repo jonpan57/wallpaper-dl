@@ -6,7 +6,7 @@ from ..dowanloader.http import HttpDownloader
 
 
 class BingExtractor(Extractor):
-    filename_fmt = '{year}-{month}-{filename}'
+    filename_fmt = '{year}{month}-{filename}'
     link_list = []
 
     def __init__(self):
@@ -20,6 +20,7 @@ class BingExtractor(Extractor):
         url = self.root
         is_last_page = False
         while not is_last_page:
+            print(url)
             response = self.session.get(url=url)
             bs = bs4.BeautifulSoup(response.text, 'lxml')
 

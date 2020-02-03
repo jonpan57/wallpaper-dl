@@ -17,4 +17,5 @@ class Processor:
 
     def submit(self, func, extractor):
         for link in extractor.link_list:
-            self.executor.submit(func, (link))
+            print(link)
+            self.executor.submit(func, link)
