@@ -1,11 +1,12 @@
 import os
 import bs4
 import lxml
+import mimetypes
 from .common import Extractor
 
 
 class KonachanExtractor(Extractor):
-    filename_fmt = '{id}'
+    filename_fmt = '{id}{extension}'
 
     def __init__(self):
         super().__init__()
@@ -26,7 +27,8 @@ class KonachanExtractor(Extractor):
     def filename(self, response):
         basename = os.path.basename(response.request.url)
         url = basename.split('%20')
-        return self.filename_fmt.format(id=url[2])
+        extension = mimetypes.guess_extension(response.headers.get('Content-Type'))
+        return self.filename_fmt.format(id=url[2], extension=extension)
 
     def _get_page_link(self):
         print(self.url)

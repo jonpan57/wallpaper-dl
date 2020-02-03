@@ -1,7 +1,7 @@
 import os
 import logging
 
-log_path = 'app/log/'
+log_path = 'log/'
 
 """
 %(asctime)s     :   日志的时间
