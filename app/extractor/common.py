@@ -14,6 +14,8 @@ class Extractor:
 
     root = ''
 
+    links = []
+
     def __init__(self):
         self.session = requests.Session()
 

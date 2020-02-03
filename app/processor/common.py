@@ -16,6 +16,7 @@ class Processor:
             return config.get(self.category, option)
 
     def submit(self, func, extractor):
-        for link in extractor.link_list:
-            print(link)
-            self.executor.submit(func, link)
+        while extractor.next():
+            for link in extractor.links:
+                print(link)
+                self.executor.submit(func, link)

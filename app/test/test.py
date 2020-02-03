@@ -1,9 +1,12 @@
+import os
+import bs4
+import lxml
 import requests
 import mimetypes
 
-url = 'https://www.bingwallpaperhd.com/wp-content/uploads/2019/06/BiwaLake.jpg'
-session = requests.session()
-response = session.head(url)
-ct = response.headers.get('Content-Type')
-ex=mimetypes.guess_extension(ct)
-print(ex)
+url = 'https://konachan.com/post?page=11335&tags='
+html = requests.get(url)
+bs = bs4.BeautifulSoup(html.text, 'lxml')
+next_page = bs.find('a', class_='next_page')
+# ul = bs.find_all('a', class_='directlink smallimg')
+print(next_page)
