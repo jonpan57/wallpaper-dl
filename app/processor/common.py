@@ -6,7 +6,7 @@ class Processor:
     category = 'processor'
 
     def __init__(self):
-        self.executor = ThreadPoolExecutor(max_workers=int(self.config('Max_workers')))
+        self.executor = ThreadPoolExecutor(max_workers=int(self.config('MaxWorkers')))
 
     def config(self, option, value=None):
         if value:

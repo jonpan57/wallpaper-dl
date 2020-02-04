@@ -54,15 +54,12 @@ class HttpDownloader(Downloader):
             temp_size = os.path.getsize(pathname)
             if temp_size < total_size:
                 header = {'Range': 'bytes={}-'.format(temp_size)}
-                self.session.headers.update(header)
-                response = self.session.get(url, stream=self._stream, verify=self._verify)
-
+                response = self.session.get(url, stream=self._stream, verify=self._verify, headers=header)
                 with open(pathname, 'ab') as f:
                     for chunk in response.iter_content(chunk_size=self._chunk_size):
                         if chunk:
                             f.write(chunk)
                             f.flush()
-                self.session.headers.pop('Range')
             else:
                 pass
         else:
