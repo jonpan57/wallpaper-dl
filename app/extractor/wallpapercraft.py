@@ -5,27 +5,30 @@ import mimetypes
 from .common import Extractor
 
 
-class WallpaperCraftExtractor(Extractor, catalog=None, sort=None, resolution=None):
+class WallpaperCraftExtractor(Extractor):
     filename_fmt = '{id}'
 
-    def __init__(self, catalog, sort, resolution):
+    def __init__(self, catalog=None, sort=None, resolution=None):
         super().__init__()
 
         self.category = 'wallpapercraft'
         self.root = self.config('Root')
 
-        if catalog and sort and resolution:
-            catalog = 'catalog/' + catalog
-            self.url = '{}/{}/{}/{}'.format(self.root, catalog, sort, resolution)
-        elif catalog:
-            pass
+        if catalog or sort or resolution:
+            if catalog:
+                self.url = self.root + '/catalog/' + catalog
+            else:
+                self.url = self.root + '/all'
+            if sort:
+                self.url += '/' + sort
+            if resolution:
+                self.url += '/' + resolution
 
-        elif sort:
-            self.url = '{}/{}/{}'.format(self.root, catalog, sort)
-        elif resolution:
-            self.url = '{}/{}/{}'.format(self.root, catalog, resolution)
+        else:
+            self.url = self.root
 
         self.is_last_page = False
+        print(self.url)
 
     def next(self):
         self.links.clear()
