@@ -3,16 +3,20 @@ import bs4
 import lxml
 import requests
 import mimetypes
-from retrying import retry
+from tenacity import retry, stop_after_attempt
 
 url = 'https://konachan.org'
 
 
-@retry(stop_max_attempt_number=3)
+@retry(reraise=True, stop=stop_after_attempt(3))
 def get_head():
-    session = requests.session()
-    response = session.head(url, timeout=3)
-    print(1)
+    try:
+        session = requests.session()
+        response = session.head(url, timeout=3)
+        return response
+    except Exception as e:
+        return None
 
 
-get_head()
+s = get_head()
+print(s)

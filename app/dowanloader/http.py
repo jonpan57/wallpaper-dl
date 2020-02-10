@@ -1,6 +1,6 @@
 import os
 import requests
-
+from tenacity import retry, stop_after_attempt
 from .common import Downloader
 from .. import util
 
@@ -30,15 +30,14 @@ class HttpDownloader(Downloader):
         else:
             print(url + ' --> Status Code ' + str(response.status_code))
 
+    @retry(stop=stop_after_attempt(3))
     def _get_response(self, url):
         try:
             response = self.session.head(url, timeout=self._timeout)
+            return response
 
         except Exception:
             return None
-
-        else:
-            return response
 
     @staticmethod
     def _get_file_size(response):  # 获取下载文件总大小
