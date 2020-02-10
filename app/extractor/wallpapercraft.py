@@ -23,12 +23,10 @@ class WallpaperCraftExtractor(Extractor):
                 self.url += '/' + sort
             if resolution:
                 self.url += '/' + resolution
-
         else:
             self.url = self.root
 
         self.is_last_page = False
-        print(self.url)
 
     def next(self):
         self.links.clear()
@@ -45,7 +43,6 @@ class WallpaperCraftExtractor(Extractor):
         return self.filename_fmt.format(id=url[2], extension=extension)
 
     def _get_page_link(self):
-        print(self.url)
         response = self.session.get(url=self.url)
         bs = bs4.BeautifulSoup(response.text, 'lxml')
         self._find_page_link(bs)

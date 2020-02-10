@@ -1,34 +1,36 @@
 import os
 import bs4
 import lxml
+from retry import retry
 from .common import Extractor
 from ..dowanloader.http import HttpDownloader
 
 
 class BingExtractor(Extractor):
     filename_fmt = '{year}{month}-{filename}'
+    is_last_page = False
 
     def __init__(self):
         super().__init__()
-
         self.category = 'bing'
         self.url = self.config('Root')
-        self.is_last_page = False
 
     def next(self):
         self.links.clear()
-        if self.is_last_page:
-            return False
-        else:
+        if not self.is_last_page:
             self._get_page_link()
             return True
+        else:
+            return False
 
     def filename(self, response):
         url = response.request.url.split('/')
         return self.filename_fmt.format(year=url[-3], month=url[-2], filename=url[-1])
 
+    @retry(tries=3)
     def _get_page_link(self):
         print(self.url)
+
         response = self.session.get(url=self.url)
         bs = bs4.BeautifulSoup(response.text, 'lxml')
         self._find_page_link(bs)

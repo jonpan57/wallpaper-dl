@@ -9,11 +9,8 @@ class Extractor:
 
     directory_fmt = '{category}'
     filename_fmt = '{filename}{extension}'
-
     cookie_domain = ''
-
     root = ''
-
     links = []
 
     def __init__(self):
@@ -21,6 +18,8 @@ class Extractor:
 
         self._cookie_jar = self.session.cookies
         self._cookie_file = None
+
+        self._retries = int(self.config('Retries'))
 
         self._init_headers()
         self._init_cookies()

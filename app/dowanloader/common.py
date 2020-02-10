@@ -1,15 +1,13 @@
 import os
 import logging
-from app import config
+from .. import config
 
 
 class Downloader:
     category = 'downloader'
 
     def __init__(self, extractor):
-
         self.session = extractor.session
-
         self._retries = int(self.config('Retries'))
         self._timeout = int(self.config('Timeout'))
         self._stream = bool(self.config('Stream'))
