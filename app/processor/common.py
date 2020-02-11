@@ -18,5 +18,4 @@ class Processor:
     def submit(self, func, extractor):
         while extractor.next():
             for link in extractor.links:
-                print(link)
                 self.executor.submit(func, link)

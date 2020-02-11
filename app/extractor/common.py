@@ -41,7 +41,6 @@ class Extractor:
         headers['Accept-Encoding'] = self.config('Accept-Encoding')
         headers['Connection'] = self.config('Connection')
         headers['Upgrade-Insecure-Requests'] = self.config('Upgrade-Insecure-Requests')
-        print(headers)
 
     def _init_cookies(self):
         if self.cookie_domain is None:

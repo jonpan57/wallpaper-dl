@@ -1,7 +1,8 @@
 import os
 import bs4
 import lxml
-from retry import retry
+
+from tenacity import retry, stop_after_attempt
 from .common import Extractor
 from ..dowanloader.http import HttpDownloader
 
