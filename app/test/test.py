@@ -19,5 +19,10 @@ def get_response_header(url):
         return None
 
 
-resp = get_response_header(url)
-print(resp.headers)
+pathname = '/home/manjaro/test'
+try:
+    size = os.path.getsize(pathname)
+    print(size)
+except FileNotFoundError as e:
+    print(-1)
+    raise e

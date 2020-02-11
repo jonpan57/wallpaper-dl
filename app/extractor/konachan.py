@@ -37,12 +37,14 @@ class KonachanExtractor(Extractor):
         if response is None:
             print(self.url + ' --> Request Timeout')
             self.is_last_page = True
+            print('Not done')
         else:
             bs = bs4.BeautifulSoup(response.text, 'lxml')
             self._find_page_link(bs)
             next_page = self._find_next_page(bs)
             if next_page is None:
                 self.is_last_page = True
+                print('All done!')
             else:
                 self.url = next_page
 
@@ -58,7 +60,7 @@ class KonachanExtractor(Extractor):
         else:
             return None
 
-    @retry(reraise=True, stop=stop_after_attempt(3))
+    @retry(reraise=True, stop=stop_after_attempt(10))
     def _get_response_body(self, url):
         try:
             response = self.session.get(url)

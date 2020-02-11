@@ -33,32 +33,29 @@ class HttpDownloader(Downloader):
             print(url + ' --> Status code ' + str(response.status_code))
 
     def _range_download(self, url, pathname, total_size):
-        if os.path.exists(pathname) and total_size > 0:
+        try:
             temp_size = os.path.getsize(pathname)
-            if temp_size < total_size:
-                header = {'Range': 'bytes={}-'.format(temp_size)}
-                response = self._get_response_body(url, stream=self._stream, verify=self._verify, headers=header)
-                if response is None:
-                    print(url + ' --> Request Timeout By Get')
-                else:
-                    with open(pathname, 'ab') as f:
-                        for chunk in response.iter_content(chunk_size=self._chunk_size):
-                            if chunk:
-                                f.write(chunk)
-                                f.flush()
+        except FileNotFoundError:
+            temp_size = -1
+
+        if temp_size < total_size:
+            print(temp_size + '<' + total_size)
+            header = {'Range': 'bytes={}-'.format(temp_size)}
+            response = self._get_response_body(url, stream=self._stream, verify=self._verify, headers=header)
+            if response is None:
+                print(url + ' --> Request Timeout By Get')
             else:
-                pass
+                self._write_file(response, pathname, 'ab')
+
+        elif temp_size == total_size:
+            pass
 
         else:
             response = self._get_response_body(url, stream=self._stream, verify=self._verify)
             if response is None:
                 print(url + ' --> Request Timeout By Get')
             else:
-                with open(pathname, 'wb') as f:
-                    for chunk in response.iter_content(chunk_size=self._chunk_size):
-                        if chunk:
-                            f.write(chunk)
-                            f.flush()
+                self._write_file(response, pathname, 'wb')
 
     def _chunked_download(self, url, path, filename):
         pass
@@ -76,6 +73,7 @@ class HttpDownloader(Downloader):
     def _get_response_body(self, url, stream, verify, header=None):
         try:
             response = self.session.get(url, stream=stream, verify=verify, headers=header)
+            print('test')
             return response
 
         except Exception:
@@ -87,3 +85,9 @@ class HttpDownloader(Downloader):
             return int(response.headers.get('Content-Length'))
         else:
             return -1
+
+    def _write_file(self, response, pathname, mode):
+        with open(pathname, mode) as f:
+            for chunk in response.iter_content(chunk_size=self._chunk_size):
+                if chunk:
+                    f.write(chunk)
