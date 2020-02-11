@@ -19,4 +19,5 @@ def get_head():
 
 
 s = get_head()
-print(s)
+print(int(s))
+

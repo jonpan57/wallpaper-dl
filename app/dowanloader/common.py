@@ -25,8 +25,8 @@ class Downloader:
         # 以后加入覆盖下载和中止下载选项
         try:
             self._start_download(url, **options)
-        except Exception as e:
-            print(url+' -> download failed')
+        except Exception:
+            print(url+' --> Download Failed')
 
     def _start_download(self, url, **options):
         pass

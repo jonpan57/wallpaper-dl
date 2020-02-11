@@ -11,7 +11,7 @@ class HttpDownloader(Downloader):
         self.path_fmt = util.PathFormat(extractor)
 
     def _start_download(self, url, **options):
-        response = self._get_response(url)
+        response = self._get_response_header(url)
 
         if response is None:
             print(url + ' --> Request Timeout')
@@ -22,6 +22,7 @@ class HttpDownloader(Downloader):
             if response.headers.get('Accept-Ranges') == 'bytes':  # 支持断点续传的标志，同时也可以多线程下载
                 total_size = self._get_file_size(response)
                 self._range_download(url, pathname, total_size)
+
             elif response.headers.get('Transfer-Encoding') == 'chunked':
                 pass
             else:
@@ -30,12 +31,20 @@ class HttpDownloader(Downloader):
         else:
             print(url + ' --> Status Code ' + str(response.status_code))
 
-    @retry(stop=stop_after_attempt(3))
-    def _get_response(self, url):
+    @retry(stop=stop_after_attempt(super()._retries))
+    def _get_response_header(self, url):
         try:
             response = self.session.head(url, timeout=self._timeout)
             return response
 
+        except Exception:
+            return None
+
+    @retry(stop=stop_after_attempt(super()._retries))
+    def _get_response_body(self, url, stream, verify, header=None):
+        try:
+            response = self.session.get(url, stream=stream, verify=verify, headers=header)
+            return response
         except Exception:
             return None
 
