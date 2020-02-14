@@ -1,19 +1,12 @@
 from concurrent.futures import ThreadPoolExecutor
-from app import config
+from app.config import Config
 
 
-class Processor:
+class Processor(Config):
     category = 'processor'
 
     def __init__(self):
         self.executor = ThreadPoolExecutor(max_workers=int(self.config('MaxWorkers')))
-
-    def config(self, option, value=None):
-        if value:
-            config.write(self.category, option, value)
-            return config.get(self.category, option)
-        else:
-            return config.get(self.category, option)
 
     def submit(self, func, extractor):
         while extractor.next():

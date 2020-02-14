@@ -1,10 +1,10 @@
 # extractor类，解决登录和解析网址
 import requests
 
-from app import config
+from app.config import Config
 
 
-class Extractor:
+class Extractor(Config):
     category = 'extractor'
 
     directory_fmt = '{category}'
@@ -25,13 +25,6 @@ class Extractor:
         self._init_headers()
         self._init_cookies()
         self._init_proxies()
-
-    def config(self, option, value=None):
-        if value:
-            config.write(self.category, option, value)
-            return config.get(self.category, option)
-        else:
-            return config.get(self.category, option)
 
     def _init_headers(self):
         headers = self.session.headers

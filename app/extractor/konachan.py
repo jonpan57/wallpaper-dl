@@ -19,6 +19,7 @@ class KonachanExtractor(Extractor):
     def next(self):
         self.links.clear()
         if self.is_last_page:
+            print(self.is_last_page)
             return False
         else:
             self._get_page_link()
@@ -50,7 +51,6 @@ class KonachanExtractor(Extractor):
     def _find_page_link(self, bs):
         links = bs.find_all('a', class_='directlink')
         for link in links:
-            print(link)
             self.links.append(link.get('href'))
 
     def _find_next_page(self, bs):

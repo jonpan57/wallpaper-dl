@@ -4,7 +4,7 @@ import bs4
 import os
 
 # from app.extractor.bing import BingExtractor
-from .extractor.konachan import KonachanExtractor
+from app.extractor.konachan import KonachanExtractor
 # from .extractor.wallpapercraft import WallpaperCraftExtractor
 from .dowanloader.http import HttpDownloader
 from .processor.common import Processor

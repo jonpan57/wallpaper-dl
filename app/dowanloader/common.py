@@ -1,9 +1,9 @@
 import os
 import logging
-from .. import config
+from app.config import Config
 
 
-class Downloader:
+class Downloader(Config):
     category = 'downloader'
 
     def __init__(self, extractor):
@@ -14,13 +14,6 @@ class Downloader:
         self._stream = bool(self.config('Stream'))
         self._verify = bool(self.config('Verify'))
         self._chunk_size = int(self.config('ChunkSize'))
-
-    def config(self, option, value=None):
-        if value:
-            config.write(self.category, option, value)
-            return config.get(self.category, option)
-        else:
-            return config.get(self.category, option)
 
     def download(self, url, **options):
         # 以后加入覆盖下载和中止下载选项
