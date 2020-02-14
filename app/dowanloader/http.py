@@ -12,7 +12,7 @@ class HttpDownloader(Downloader):
         self.path_fmt = util.PathFormat(extractor)
 
     def _start_download(self, url, **options):
-        response = self._get_response_header(url=url)
+        response = self._get_response_head(url=url)
 
         if response is None:
             print(url + ' --> Request timeout by head')
@@ -39,13 +39,12 @@ class HttpDownloader(Downloader):
             temp_size = -1
 
         if 0 <= temp_size < total_size:
-            print(url)
-            # header = {'Range': 'bytes={}-'.format(temp_size)}
-            response = self._get_response_body(url=url, stream=self._stream, verify=self._verify)
+            header = {'Range': 'bytes={}-'.format(temp_size)}
+            response = self._get_response_body(url=url, stream=self._stream, verify=self._verify, headers=header)
             if response is None:
                 print(url + ' --> Request Timeout By Get')
             else:
-                self._write_file(response, pathname, 'wb')
+                self._write_file(response, pathname, 'ab')
 
         elif 0 <= temp_size == total_size:
             pass
@@ -61,21 +60,20 @@ class HttpDownloader(Downloader):
         pass
 
     @retry(reraise=True, stop=stop_after_attempt(3))
-    def _get_response_header(self, url):
+    def _get_response_head(self, url):
         try:
             return self.session.head(url=url, timeout=self._timeout)
 
-        except Exception:
+        except requests.exceptions:
             return None
 
     @retry(reraise=True, stop=stop_after_attempt(3))
     def _get_response_body(self, url, stream, verify, header=None):
         try:
             response = self.session.get(url=url, stream=stream, verify=verify, headers=header, timeout=self._timeout)
-            print(response.status_code)
             return response
 
-        except Exception:
+        except requests.exceptions:
             return None
 
     @staticmethod

@@ -5,9 +5,9 @@ import requests
 import mimetypes
 from tenacity import retry, stop_after_attempt
 
-url = 'https://www.bingwallpaperhd.com/wp-content/uploads/2018/08/ArcticFoxSibs.jpg'
+url = 'https://konachan.org'
 
-root = '/home/manjaro/图片/gallery/bing/201808-ArcticFoxSibs.jpg'
+root = '/home/manjaro/图片/test.jpg'
 
 session = requests.session()
 headers = session.headers
@@ -22,9 +22,10 @@ headers['Upgrade-Insecure-Requests'] = '1'
 session.head('https://www.bingwallpaperhd.com')
 
 print(session.headers)
-resp = session.get(url=url, stream=True, verify=False)
+header = {'Range': 'bytes={}-'.format(0)}
+resp = session.head(url=url, stream=True, verify=False, headers=header, timeout=3)
 
-with open(root, 'wb') as f:
+with open(root, 'ab') as f:
     for chunk in resp.iter_content(chunk_size=16384):
         if chunk:
             f.write(chunk)
