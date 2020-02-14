@@ -1,6 +1,7 @@
 # extractor类，解决登录和解析网址
 import requests
 
+from tenacity import retry, stop_after_attempt
 from app import config
 
 
@@ -12,6 +13,7 @@ class Extractor:
     cookie_domain = ''
     root = ''
     links = []
+    is_last_page = False
 
     def __init__(self):
         self.session = requests.Session()
@@ -31,6 +33,14 @@ class Extractor:
             return config.get(self.category, option)
         else:
             return config.get(self.category, option)
+
+    def next(self):
+        self.links.clear()
+        if self.is_last_page:
+            return False
+        else:
+            self._get_page_link()
+            return True
 
     def _init_headers(self):
         headers = self.session.headers
@@ -67,3 +77,11 @@ class Extractor:
 
     def _update_cookie_file(self, cookie_file):
         pass
+
+    @retry(reraise=True, stop=stop_after_attempt(10))
+    def _get_response_body(self, url):
+        try:
+            return self.session.get(url=url)
+
+        except requests.exceptions:
+            return None
