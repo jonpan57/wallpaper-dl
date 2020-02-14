@@ -12,7 +12,7 @@ class HttpDownloader(Downloader):
         self.path_fmt = util.PathFormat(extractor)
 
     def _start_download(self, url, **options):
-        response = self._get_response_header(url)
+        response = self._get_response_header(url=url)
 
         if response is None:
             print(url + ' --> Request timeout by head')
@@ -38,20 +38,20 @@ class HttpDownloader(Downloader):
         except FileNotFoundError:
             temp_size = -1
 
-        if temp_size < total_size:
-            print(temp_size + '<' + total_size)
-            header = {'Range': 'bytes={}-'.format(temp_size)}
-            response = self._get_response_body(url, stream=self._stream, verify=self._verify, headers=header)
+        if 0 <= temp_size < total_size:
+            print(url)
+            # header = {'Range': 'bytes={}-'.format(temp_size)}
+            response = self._get_response_body(url=url, stream=self._stream, verify=self._verify)
             if response is None:
                 print(url + ' --> Request Timeout By Get')
             else:
-                self._write_file(response, pathname, 'ab')
+                self._write_file(response, pathname, 'wb')
 
-        elif temp_size == total_size:
+        elif 0 <= temp_size == total_size:
             pass
 
         else:
-            response = self._get_response_body(url, stream=self._stream, verify=self._verify)
+            response = self._get_response_body(url=url, stream=self._stream, verify=self._verify)
             if response is None:
                 print(url + ' --> Request Timeout By Get')
             else:
@@ -63,8 +63,7 @@ class HttpDownloader(Downloader):
     @retry(reraise=True, stop=stop_after_attempt(3))
     def _get_response_header(self, url):
         try:
-            response = self.session.head(url, timeout=self._timeout)
-            return response
+            return self.session.head(url=url, timeout=self._timeout)
 
         except Exception:
             return None
@@ -72,8 +71,8 @@ class HttpDownloader(Downloader):
     @retry(reraise=True, stop=stop_after_attempt(3))
     def _get_response_body(self, url, stream, verify, header=None):
         try:
-            response = self.session.get(url, stream=stream, verify=verify, headers=header)
-            print('test')
+            response = self.session.get(url=url, stream=stream, verify=verify, headers=header, timeout=self._timeout)
+            print(response.status_code)
             return response
 
         except Exception:
@@ -91,3 +90,4 @@ class HttpDownloader(Downloader):
             for chunk in response.iter_content(chunk_size=self._chunk_size):
                 if chunk:
                     f.write(chunk)
+                    f.flush()

@@ -5,24 +5,27 @@ import requests
 import mimetypes
 from tenacity import retry, stop_after_attempt
 
-url = 'https://konachan.com/jpeg/60febdadab2abefb56606d1a3ed6d6f7/Konachan.com%20-%20299490%20bow%20breasts%20brown_eyes%20brown_hair%20close%20nipples%20open_shirt%20original%20petals%20school_uniform%20sourenkio%20twintails.jpg '
+url = 'https://www.bingwallpaperhd.com/wp-content/uploads/2018/08/ArcticFoxSibs.jpg'
 
+root = '/home/manjaro/图片/gallery/bing/201808-ArcticFoxSibs.jpg'
 
-@retry(reraise=True, stop=stop_after_attempt(3))
-def get_response_header(url):
-    try:
-        session = requests.session()
-        response = session.head(url, timeout=3)
-        return response
+session = requests.session()
+headers = session.headers
+headers.clear()
+headers['User-Agent'] = 'Mozilla/5.0 (X11; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0'
+headers['Accept'] = '*/*'
+headers['Accept-Language'] = 'zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2'
+headers['Accept-Encoding'] = 'gzip, deflate'
+headers['Connection'] = 'keep-alive'
+headers['Upgrade-Insecure-Requests'] = '1'
 
-    except Exception:
-        return None
+session.head('https://www.bingwallpaperhd.com')
 
+print(session.headers)
+resp = session.get(url=url, stream=True, verify=False)
 
-pathname = '/home/manjaro/test'
-try:
-    size = os.path.getsize(pathname)
-    print(size)
-except FileNotFoundError as e:
-    print(-1)
-    raise e
+with open(root, 'wb') as f:
+    for chunk in resp.iter_content(chunk_size=16384):
+        if chunk:
+            f.write(chunk)
+            f.flush()

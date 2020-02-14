@@ -28,18 +28,21 @@ class BingExtractor(Extractor):
         url = response.request.url.split('/')
         return self.filename_fmt.format(year=url[-3], month=url[-2], filename=url[-1])
 
-    @retry(tries=3)
     def _get_page_link(self):
         print(self.url)
-
-        response = self.session.get(url=self.url)
-        bs = bs4.BeautifulSoup(response.text, 'lxml')
-        self._find_page_link(bs)
-        next_page = self._find_next_page(bs)
-        if next_page is None:
+        response = self._get_response_body(url=self.url)
+        if response is None:
+            print(self.url + ' --> Request Timeout')
             self.is_last_page = True
+            print('Not done')
         else:
-            self.url = next_page
+            bs = bs4.BeautifulSoup(response.text, 'lxml')
+            self._find_page_link(bs)
+            next_page = self._find_next_page(bs)
+            if next_page is None:
+                self.is_last_page = True
+            else:
+                self.url = next_page
 
     def _find_page_link(self, bs):
         links = bs.find_all('img', class_='alignleft wp-post-image')
@@ -53,4 +56,13 @@ class BingExtractor(Extractor):
         if next_page:
             return next_page.get('href')
         else:
+            return None
+
+    @retry(reraise=True, stop=stop_after_attempt(10))
+    def _get_response_body(self, url):
+        try:
+            response = self.session.get(url)
+            return response
+
+        except Exception:
             return None
