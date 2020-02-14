@@ -1,6 +1,7 @@
 import os
 import bs4
 import lxml
+import requests
 import mimetypes
 from tenacity import retry, stop_after_attempt
 from .common import Extractor
@@ -11,11 +12,9 @@ class KonachanExtractor(Extractor):
 
     def __init__(self):
         super().__init__()
-
         self.category = 'konachan'
         self.root = self.config('Root')
         self.url = self.root + '/post'
-        self.is_last_page = False
 
     def next(self):
         self.links.clear()
@@ -51,6 +50,7 @@ class KonachanExtractor(Extractor):
     def _find_page_link(self, bs):
         links = bs.find_all('a', class_='directlink')
         for link in links:
+            print(link)
             self.links.append(link.get('href'))
 
     def _find_next_page(self, bs):
@@ -63,8 +63,7 @@ class KonachanExtractor(Extractor):
     @retry(reraise=True, stop=stop_after_attempt(10))
     def _get_response_body(self, url):
         try:
-            response = self.session.get(url)
-            return response
+            return self.session.get(url=url)
 
-        except Exception:
+        except requests.exceptions:
             return None

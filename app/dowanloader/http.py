@@ -38,7 +38,9 @@ class HttpDownloader(Downloader):
         except FileNotFoundError:
             temp_size = -1
 
+        print(url)
         if 0 <= temp_size < total_size:
+            print('ab')
             header = {'Range': 'bytes={}-'.format(temp_size)}
             response = self._get_response_body(url=url, stream=self._stream, verify=self._verify, headers=header)
             if response is None:
@@ -47,9 +49,11 @@ class HttpDownloader(Downloader):
                 self._write_file(response, pathname, 'ab')
 
         elif 0 <= temp_size == total_size:
+            print('not')
             pass
 
         else:
+            print('wb')
             response = self._get_response_body(url=url, stream=self._stream, verify=self._verify)
             if response is None:
                 print(url + ' --> Request Timeout By Get')
@@ -70,8 +74,8 @@ class HttpDownloader(Downloader):
     @retry(reraise=True, stop=stop_after_attempt(3))
     def _get_response_body(self, url, stream, verify, header=None):
         try:
-            response = self.session.get(url=url, stream=stream, verify=verify, headers=header, timeout=self._timeout)
-            return response
+            print('first')
+            return self.session.get(url=url, stream=stream, verify=verify, headers=header, timeout=self._timeout)
 
         except requests.exceptions:
             return None

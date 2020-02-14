@@ -12,6 +12,7 @@ class Extractor:
     cookie_domain = ''
     root = ''
     links = []
+    is_last_page = False
 
     def __init__(self):
         self.session = requests.Session()

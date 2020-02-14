@@ -9,7 +9,7 @@ from ..dowanloader.http import HttpDownloader
 
 class BingExtractor(Extractor):
     filename_fmt = '{year}{month}-{filename}'
-    is_last_page = False
+
 
     def __init__(self):
         super().__init__()
