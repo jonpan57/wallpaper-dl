@@ -3,13 +3,13 @@ import requests
 
 from tenacity import retry, stop_after_attempt
 from .common import Downloader
-from .. import util
+from ..util import PathFormat
 
 
 class HttpDownloader(Downloader):
     def __init__(self, extractor):
         super().__init__(extractor)
-        self.path_fmt = util.PathFormat(extractor)
+        self.path_fmt = PathFormat(extractor)
 
     def _start_download(self, url, **options):
         response = self._get_response_head(url=url)
@@ -26,6 +26,7 @@ class HttpDownloader(Downloader):
 
             elif response.headers.get('Transfer-Encoding') == 'chunked':
                 pass
+
             else:
                 pass
 
@@ -33,29 +34,28 @@ class HttpDownloader(Downloader):
             print(url + ' --> Status code ' + str(response.status_code))
 
     def _range_download(self, url, pathname, total_size):
-        print(url)
         try:
             temp_size = os.path.getsize(pathname)
         except FileNotFoundError:
             temp_size = -1
 
         if 0 <= temp_size < total_size:
-            header = {'Range': 'bytes={}-'.format(temp_size)}
-            response = self._get_response_body(url=url, stream=self._stream, verify=self._verify, headers=header)
-            if response is None:
-                print(url + ' --> Request Timeout By Get')
+            # header = {'Range': 'bytes={}-'.format(temp_size)}
+            response = self._get_response_body(url=url, stream=self._stream, verify=self._verify)
+            if response:
+                self._write_file(response, pathname, 'wb')
             else:
-                self._write_file(response, pathname, 'ab')
+                print(url + ' --> Request Timeout By Get')
 
         elif 0 <= temp_size == total_size:
             pass
 
         else:
             response = self._get_response_body(url=url, stream=self._stream, verify=self._verify)
-            if response is None:
-                print(url + ' --> Request Timeout By Get')
-            else:
+            if response:
                 self._write_file(response, pathname, 'wb')
+            else:
+                print(url + ' --> Request Timeout By Get')
 
     def _chunked_download(self, url, path, filename):
         pass
@@ -71,7 +71,6 @@ class HttpDownloader(Downloader):
     @retry(reraise=True, stop=stop_after_attempt(3))
     def _get_response_body(self, url, stream, verify, header=None):
         try:
-            print('first')
             return self.session.get(url=url, stream=stream, verify=verify, headers=header, timeout=self._timeout)
 
         except requests.exceptions:

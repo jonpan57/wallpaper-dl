@@ -7,7 +7,7 @@ class PathFormat:
     def __init__(self, extractor):
         self.path = extractor.config('Directory')
         try:
-            self.filename = extractor.filenames
+            self.filename = extractor.filename
         except AttributeError:
             return None
 
@@ -18,7 +18,7 @@ class PathFormat:
 
     def _get_file_path(self, path):
         # 还需添加自定义路径合法性检查
-        if path is None:
+        if not path:
             path = self.path
         if not os.path.exists(path):
             os.makedirs(path)

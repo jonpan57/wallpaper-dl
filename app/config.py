@@ -7,7 +7,7 @@ class Config:
     cfg = configparser.ConfigParser()
     cfg.read(config_path)
 
-    def config(self, option, value=None):
+    def config(self, option, value=None):  # 获取配置，同时可以修改配置
         if value:
             self._write(self.category, option, value)
             return self._get(self.category, option)

@@ -1,6 +1,9 @@
 # extractor类，解决登录和解析网址
+import bs4
+import lxml
 import requests
 
+from tenacity import retry, stop_after_attempt
 from app.config import Config
 
 
@@ -61,3 +64,45 @@ class Extractor(Config):
 
     def _update_cookie_file(self, cookie_file):
         pass
+
+    def next(self):
+        self.links.clear()
+        if self.is_last_page:
+            return False
+        else:
+            self._get_page_links()
+            return True
+
+    def filename(self):
+        pass
+
+    def _get_page_links(self):
+        response = self._get_response_body(url=self.url)
+
+        if response:
+            bs = bs4.BeautifulSoup(response.text, 'lxml')
+            self._find_page_links(bs)
+            next_page = self._find_next_page(bs)
+            if next_page:
+                self.url = next_page
+            else:
+                self.is_last_page = True
+                print('All done!')
+        else:
+            print(self.url + ' --> Request Timeout')
+            self.is_last_page = True
+            print('Not done')
+
+    def _find_page_links(self, bs):
+        pass
+
+    def _find_next_page(self, bs):
+        pass
+
+    @retry(reraise=True, stop=stop_after_attempt(10))
+    def _get_response_body(self, url):
+        try:
+            return self.session.get(url=url)
+
+        except requests.exceptions:
+            return None

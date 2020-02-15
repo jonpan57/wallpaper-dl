@@ -33,7 +33,7 @@ class WallpaperCraftExtractor(Extractor):
         if self.is_last_page:
             return False
         else:
-            self._get_page_link()
+            self._get_page_links()
             return True
 
     def filename(self, response):
@@ -42,7 +42,7 @@ class WallpaperCraftExtractor(Extractor):
         extension = mimetypes.guess_extension(response.headers.get('Content-Type'))
         return self.filename_fmt.format(id=url[2], extension=extension)
 
-    def _get_page_link(self):
+    def _get_page_links(self):
         response = self.session.get(url=self.url)
         bs = bs4.BeautifulSoup(response.text, 'lxml')
         self._find_page_link(bs)
