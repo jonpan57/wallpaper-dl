@@ -4,13 +4,16 @@ import bs4
 import os
 
 from app.extractor.bing import BingExtractor
-from .extractor.konachan import KonachanExtractor
-from .extractor.wallpapercraft import WallpaperCraftExtractor
+from app.extractor.konachan import KonachanExtractor
+# from .extractor.wallpapercraft import WallpaperCraftExtractor
 from .dowanloader.http import HttpDownloader
 from .processor.common import Processor
 
-konachan = KonachanExtractor()
-bing = BingExtractor()
-downloader = HttpDownloader(bing)
+
 processor = Processor()
-processor.submit(downloader.download, bing)
+
+bing = BingExtractor()
+konachan = KonachanExtractor()
+
+downloader = HttpDownloader(konachan)
+processor.submit(downloader.download, konachan)

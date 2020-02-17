@@ -1,7 +1,9 @@
 import os
 import bs4
 import lxml
+import requests
 
+from tenacity import retry, stop_after_attempt
 from .common import Extractor
 
 
@@ -17,26 +19,11 @@ class BingExtractor(Extractor):
         filename = response.request.url.split('/')
         return self.filename_fmt.format(year=filename[-3], month=filename[-2], filename=filename[-1])
 
-    def _get_page_link(self):
-        print(self.url)
-        response = self._get_response_body(url=self.url)
-        if response is None:
-            print(self.url + ' --> Request timeout and unfinished task')
-            self.is_last_page = True
-        else:
-            bs = bs4.BeautifulSoup(response.text, 'lxml')
-            self._find_page_link(bs)
-            next_page = self._find_next_page(bs)
-            if next_page is None:
-                self.is_last_page = True
-                print('All done!!!')
-            else:
-                self.url = next_page
-
-    def _find_page_link(self, bs):
+    def _find_page_links(self, bs):
         links = bs.find_all('img', class_='alignleft wp-post-image')
         for link in links:
-            self.links.append(link.get('src').replace('-300x200', ''))
+            temp = link.get('src')
+            self.links.append(temp.replace('-300x200', ''))
 
     @staticmethod
     def _find_next_page(bs):

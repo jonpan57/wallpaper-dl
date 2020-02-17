@@ -1,8 +1,7 @@
 import os
-import bs4
-import lxml
+
 import mimetypes
-from tenacity import retry, stop_after_attempt
+
 from .common import Extractor
 
 
@@ -20,23 +19,7 @@ class KonachanExtractor(Extractor):
         extension = mimetypes.guess_extension(response.headers.get('Content-Type'))
         return self.filename_fmt.format(id=filename[2], extension=extension)
 
-    def _get_page_link(self):
-        print(self.url)
-        response = self._get_response_body(url=self.url)
-        if response is None:
-            print(self.url + ' --> Request timeout and unfinished task')
-            self.is_last_page = True
-        else:
-            bs = bs4.BeautifulSoup(response.text, 'lxml')
-            self._find_page_link(bs)
-            next_page = self._find_next_page(bs)
-            if next_page is None:
-                self.is_last_page = True
-                print('All done!!!')
-            else:
-                self.url = next_page
-
-    def _find_page_link(self, bs):
+    def _find_page_links(self, bs):
         links = bs.find_all('a', class_='directlink')
         for link in links:
             self.links.append(link.get('href'))

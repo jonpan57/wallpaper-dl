@@ -26,12 +26,23 @@ class WallpaperCraftExtractor(Extractor):
         else:
             self.url = self.root
 
-    def filename(self, response):
-        filename = os.path.basename(response.request.url).split('%20')
-        extension = mimetypes.guess_extension(response.headers.get('Content-Type'))
-        return self.filename_fmt.format(id=filename[2], extension=extension)
+        self.is_last_page = False
 
-    def _get_page_link(self):
+    def next(self):
+        self.links.clear()
+        if self.is_last_page:
+            return False
+        else:
+            self._get_page_links()
+            return True
+
+    def filename(self, response):
+        basename = os.path.basename(response.request.url)
+        url = basename.split('%20')
+        extension = mimetypes.guess_extension(response.headers.get('Content-Type'))
+        return self.filename_fmt.format(id=url[2], extension=extension)
+
+    def _get_page_links(self):
         response = self.session.get(url=self.url)
         bs = bs4.BeautifulSoup(response.text, 'lxml')
         self._find_page_link(bs)
