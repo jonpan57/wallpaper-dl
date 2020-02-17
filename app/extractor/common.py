@@ -77,8 +77,8 @@ class Extractor(Config):
         pass
 
     def _get_page_links(self):
+        print(self.url)
         response = self._get_response_body(url=self.url)
-
         if response:
             bs = bs4.BeautifulSoup(response.text, 'lxml')
             self._find_page_links(bs)
