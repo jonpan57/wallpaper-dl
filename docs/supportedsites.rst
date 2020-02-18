@@ -5,4 +5,4 @@ Unless otherwise known, assume all sites to be NSFW
 ==================== =================================== ================================================== ================
 Site                 URL                                 Capabilities                                       Authentication
 ==================== =================================== ================================================== ================
-Bing                 https://www.bingwallpaperhd.com                Genres, individual Images, User Profiles
+Bing                 https://www.bingwallpaperhd.com     Genres, individual Images, User Profiles
