@@ -37,3 +37,8 @@ class PathFormat:
 
         else:  # url路径定义
             return os.path.basename(response.request.url)
+
+
+class Match:
+    def __init__(self, **options):
+        self.options = options
