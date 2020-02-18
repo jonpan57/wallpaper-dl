@@ -1,9 +1,3 @@
-import os
-import bs4
-import lxml
-import requests
-
-from tenacity import retry, stop_after_attempt
 from .common import Extractor
 
 

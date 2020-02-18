@@ -1,18 +1,21 @@
 import os
-import bs4
-import lxml
 import mimetypes
+
 from .common import Extractor
 
 
 class WallpaperCraftExtractor(Extractor):
-    filename_fmt = '{id}'
+    filename_fmt = '{id}_{resolution}{extension}'
 
     def __init__(self, catalog=None, sort=None, resolution=None):
         super().__init__()
-
         self.category = 'wallpapercraft'
         self.root = self.config('Root')
+
+        if resolution:
+            self.resolution = resolution
+        else:
+            self.resolution = '1280x720'
 
         if catalog or sort or resolution:
             if catalog:
@@ -26,40 +29,20 @@ class WallpaperCraftExtractor(Extractor):
         else:
             self.url = self.root
 
-        self.is_last_page = False
-
-    def next(self):
-        self.links.clear()
-        if self.is_last_page:
-            return False
-        else:
-            self._get_page_links()
-            return True
-
     def filename(self, response):
-        basename = os.path.basename(response.request.url)
-        url = basename.split('%20')
+        filename = os.path.basename(response.request.url).split('_')
         extension = mimetypes.guess_extension(response.headers.get('Content-Type'))
-        return self.filename_fmt.format(id=url[2], extension=extension)
+        return self.filename_fmt.format(id=filename[-2], resolution=self.resolution, extension=extension)
 
-    def _get_page_links(self):
-        response = self.session.get(url=self.url)
-        bs = bs4.BeautifulSoup(response.text, 'lxml')
-        self._find_page_link(bs)
-        next_page = self._find_next_page(bs)
-        if next_page is None:
-            self.is_last_page = True
-        else:
-            self.url = next_page
-
-    def _find_page_link(self, bs):
-        links = bs.find_all('a', class_='directlink')
+    def _find_page_links(self, bs):
+        links = bs.find_all('img', class_='wallpapers__image')
         for link in links:
-            self.links.append(link.get('href'))
+            temp = link.get('src')
+            self.links.append(temp.replace('300x168', self.resolution))
 
     def _find_next_page(self, bs):
-        next_page = bs.find('a', class_='next_page')
+        next_page = bs.find('li', class_='pager__item_selected').find_next_sibling()
         if next_page:
-            return self.root + next_page.get('href')
+            return self.root + next_page.a.get('href')
         else:
             return None

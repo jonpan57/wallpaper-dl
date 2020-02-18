@@ -5,28 +5,17 @@ import requests
 import mimetypes
 from tenacity import retry, stop_after_attempt
 
-url = 'https://konachan.org'
+url = 'https://wallpaperscraft.com'
+resolution = '1280x720'
+links = []
+response = requests.get(url)
+bs = bs4.BeautifulSoup(response.text, 'lxml')
+link_list = bs.find_all('img', class_='wallpapers__image')
 
-root = '/home/manjaro/图片/test.jpg'
+for link in link_list:
+    temp = link.get('src')
+    links.append(temp.replace('300x168', resolution))
 
-session = requests.session()
-headers = session.headers
-headers.clear()
-headers['User-Agent'] = 'Mozilla/5.0 (X11; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0'
-headers['Accept'] = '*/*'
-headers['Accept-Language'] = 'zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2'
-headers['Accept-Encoding'] = 'gzip, deflate'
-headers['Connection'] = 'keep-alive'
-headers['Upgrade-Insecure-Requests'] = '1'
-
-session.head('https://www.bingwallpaperhd.com')
-
-print(session.headers)
-header = {'Range': 'bytes={}-'.format(0)}
-resp = session.head(url=url, stream=True, verify=False, headers=header, timeout=3)
-
-with open(root, 'ab') as f:
-    for chunk in resp.iter_content(chunk_size=16384):
-        if chunk:
-            f.write(chunk)
-            f.flush()
+s='https://images.wallpaperscraft.com/image/pens_pencils_multicolor_160648_1920x1080.jpg'
+p=s.split('_')
+print(p[-2])

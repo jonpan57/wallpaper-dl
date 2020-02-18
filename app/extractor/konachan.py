@@ -1,5 +1,4 @@
 import os
-
 import mimetypes
 
 from .common import Extractor

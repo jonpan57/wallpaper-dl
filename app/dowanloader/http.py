@@ -13,23 +13,17 @@ class HttpDownloader(Downloader):
 
     def _start_download(self, url, **options):
         response = self._get_response_head(url=url)
-
         if response is None:
             print(url + ' --> Request timeout by head')
-
         elif response.status_code == requests.codes.ok:
             pathname = self.path_fmt.format(response, options.get('path'), options.get('filename'))
-
             if response.headers.get('Accept-Ranges') == 'bytes':  # 支持断点续传的标志，同时也可以多线程下载
                 total_size = self._get_file_size(response)
                 self._range_download(url, pathname, total_size)
-
             elif response.headers.get('Transfer-Encoding') == 'chunked':
                 pass
-
             else:
                 pass
-
         else:
             print(url + ' --> Status code ' + str(response.status_code))
 
