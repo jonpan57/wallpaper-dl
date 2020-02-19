@@ -7,8 +7,8 @@ from .common import Extractor
 
 
 class WallhavenExtractor(Extractor):
-    filename_fmt = '{id}{extension}'
-    api_key='wxlFzOHZajyFmYto3MSAoczXCQ8KkEEM'
+    filename_fmt = '{category}_{purity}_{id}_{resolution}{extension}'
+    api_key = 'wxlFzOHZajyFmYto3MSAoczXCQ8KkEEM'
 
     def __init__(self, match):
         super().__init__()
