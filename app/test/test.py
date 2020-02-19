@@ -5,17 +5,18 @@ import requests
 import mimetypes
 from tenacity import retry, stop_after_attempt
 
-url = 'https://wallpaperscraft.com'
-resolution = '1280x720'
-links = []
-response = requests.get(url)
+url = 'https://wallhaven.cc/search?categories=111&purity=111&sorting=date_added&order=desc&page=4'
+session = requests.session()
+login_url = 'https://wallhaven.cc/login'
+response = session.get(login_url)
 bs = bs4.BeautifulSoup(response.text, 'lxml')
-link_list = bs.find_all('img', class_='wallpapers__image')
-
-for link in link_list:
-    temp = link.get('src')
-    links.append(temp.replace('300x168', resolution))
-
-s='https://images.wallpaperscraft.com/image/pens_pencils_multicolor_160648_1920x1080.jpg'
-p=s.split('_')
-print(p[-2])
+temp = bs.find(name='input', attrs={'name': '_token'})
+_token = temp.get('value')
+data = {
+    '_token': _token,
+    'username': 'vergil',
+    'password': '196900'
+}
+session.post('https://wallhaven.cc/auth/login', data=data)
+login = session.get('https://wallhaven.cc/user/vergil')
+print(login.text)
