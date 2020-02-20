@@ -15,11 +15,15 @@ class WallhavenExtractor(Extractor):
         self.category = 'wallhaven'
         self.root = self.config('Root')
         self.url = self.root + match
+        self.api = API(self)
 
     def filename(self, response):
         filename = os.path.basename(response.request.url).split('%20')
         extension = mimetypes.guess_extension(response.headers.get('Content-Type'))
         return self.filename_fmt.format(id=filename[2], extension=extension)
+
+    def _get_page_links(self):
+
 
     def _find_page_links(self, bs):
         ul = bs.find_all('ul')
@@ -51,3 +55,15 @@ class WallhavenExtractor(Extractor):
                 'password': self.config('Password'),
             }
             self.session.post('https://wallhaven.cc/auth/login', data=data)
+
+
+class API:
+    def __init__(self, extractor):
+        self.extractor = extractor
+        self.api_key = extractor.config('APIkey')
+        if not self.api_key:
+            self.api_key = 'wxlFzOHZajyFmYto3MSAoczXCQ8KkEEM'
+
+    def info(self, wallpaper_id):
+        url = 'https://wallhaven.cc/api/v1/w/' + wallpaper_id
+

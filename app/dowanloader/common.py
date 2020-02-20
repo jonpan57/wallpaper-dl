@@ -15,14 +15,19 @@ class Downloader(Config):
         self._verify = bool(self.config('Verify'))
         self._chunk_size = int(self.config('ChunkSize'))
 
-    def download(self, url, **options):
+    def download(self, url, path_fmt):
         # 以后加入覆盖下载和中止下载选项
-        self._start_download(url, **options)
+        try:
+            self._start_download(url, path_fmt)
+        except Exception as e:
+            raise e
+        finally:
+            self._end_download(url)
 
     def _start_download(self, url, **options):
         pass
 
-    def _end_download(self):
+    def _end_download(self, url):
         pass
 
     def pre_progress(self):
