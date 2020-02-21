@@ -1,4 +1,5 @@
 import os
+import time
 import requests
 
 from tenacity import retry, stop_after_attempt
@@ -31,9 +32,12 @@ class HttpDownloader(Downloader):
             print(url + ' --> Status code ' + str(response.status_code))
 
     def _range_download(self, url, path_fmt):
-        current_size = path_fmt.current_size()
-        if current_size:
-            header = {'Range': 'bytes={}-'.format(current_size)}
+        # check for .temp file
+        temp_size = path_fmt.temp_size()
+        if temp_size:
+            header = {'Range': 'bytes={}-'.format(temp_size)}
+
+        # connect to remote resources via head
         response = self._request_get(url=url, headers=header, stream=self._stream, verify=self._verify)
 
         # check response
@@ -43,13 +47,15 @@ class HttpDownloader(Downloader):
             total_size = response.headers.get('Content-Length')
 
         elif code == 206:
-            offset = current_size
+            offset = temp_size
             total_size = response.headers["Content-Range"].rpartition("/")[2]
 
         elif code == 416 and current_size:
             pass
         else:
             pass  # to be added
+
+        with pathfmt.open(mode) as file:
 
         if 0 <= temp_size < total_size:
             # header = {'Range': 'bytes={}-'.format(temp_size)}
@@ -99,12 +105,28 @@ class HttpDownloader(Downloader):
         else:
             return -1
 
-    def _write_file(self, response, pathname, mode):
-        with open(pathname, mode) as f:
-            for chunk in response.iter_content(chunk_size=self._chunk_size):
-                if chunk:
-                    f.write(chunk)
-                    f.flush()
+    def receive(self, response, file):
+        for data in response.iter_content(self.chunk_size):
+            file.write(data)
+
+    # def _receive_rate(self, response, file):
+    #     t1 = time.time()
+    #     rate = self.rate
+    #
+    #     for data in response.iter_content(self.chunk_size):
+    #         file.write(data)
+    #
+    #         t2 = time.time()  # current time
+    #         actual = t2 - t1  # actual elapsed time
+    #         expected = len(data) / rate  # expected elapsed time
+    #
+    #         if actual < expected:
+    #             # sleep if less time elapsed than expected
+    #             time.sleep(expected - actual)
+    #             t1 = time.time()
+    #         else:
+    #             t1 = t2
+
 
     def _end_download(self, url):
         pass

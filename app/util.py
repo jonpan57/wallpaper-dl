@@ -16,6 +16,15 @@ class PathFormat:
         filename = self._get_file_name(response, filename)
         return path + filename
 
+    def temp_size(self):
+        try:
+            return os.path.getsize(self.temp_path)
+        except FileNotFoundError:
+            return 0
+
+    def open(self, mode='wb'):
+        return open(self.temp_path, mode)
+
     def _get_file_path(self, path):
         # 还需添加自定义路径合法性检查
         if not path:
@@ -42,3 +51,4 @@ class PathFormat:
 class Match:
     def __init__(self, **options):
         self.options = options
+
