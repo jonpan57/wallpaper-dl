@@ -12,29 +12,38 @@ class HttpDownloader(Downloader):
         super().__init__(extractor)
 
     def _start_download(self, url, path_fmt):
-
+        # select the download mode by response
         response = self._request_head(url=url)
-
-        if response is None:
-            print(url + ' --> Request timeout by head')
-
-        elif response.status_code == requests.codes.ok:
-            pathname = self.path_fmt.format(response)
-
-            if response.headers.get('Accept-Ranges') == 'bytes':  # 支持断点续传的标志，同时也可以多线程下载
-                self._range_download(url, path_fmt)
-            elif response.headers.get('Transfer-Encoding') == 'chunked':
-                pass
+        if response:
+            if response.status_code == requests.codes.ok:
+                if response.headers.get('Transfer-Encoding') == 'chunked':
+                    self._chunked_download(response, path_fmt)
+                elif response.headers.get('Accept-Ranges') == 'bytes':
+                    self._range_download(response, path_fmt)
+                else:
+                    pass
             else:
-                pass
-
+                print(url + ' --> status code ' + str(response.status_code))
         else:
-            print(url + ' --> Status code ' + str(response.status_code))
+            print(url + ' --> request timeout via head')
 
-    def _range_download(self, url, path_fmt):
+    def _range_download(self, response, path_fmt):
+        url = response.requests.url
+
+        # check content Length
+        if path_fmt.get('size'):
+            total_size = int(path_fmt.get('size'))
+        elif 'Content-Length' in response.headers:
+            total_size = int(response.headers.get('Content-Length'))
+        else:
+            total_size = 0
+
         # check for .temp file
         temp_size = path_fmt.temp_size()
         if temp_size:
+            header = {'Range': 'bytes={}-'.format(temp_size)}
+
+        if temp_size < total_size:
             header = {'Range': 'bytes={}-'.format(temp_size)}
 
         # connect to remote resources via head
@@ -50,16 +59,16 @@ class HttpDownloader(Downloader):
             offset = temp_size
             total_size = response.headers["Content-Range"].rpartition("/")[2]
 
-        elif code == 416 and current_size:
+        elif code == 416 and temp_size:
             pass
         else:
             pass  # to be added
 
-        with pathfmt.open(mode) as file:
+        with path_fmt.open(mode) as file:
 
         if 0 <= temp_size < total_size:
             # header = {'Range': 'bytes={}-'.format(temp_size)}
-            response = self._request_get(url=url, stream=self._stream, verify=self._verify)
+            response = self._request_get(url=url)
             if response:
                 self._write_file(response, pathname, 'wb')
             else:
@@ -69,7 +78,7 @@ class HttpDownloader(Downloader):
             pass
 
         else:
-            response = self._request_get(url=url, stream=self._stream, verify=self._verify)
+            response = self._request_get(url=url)
             if response:
                 self._write_file(response, pathname, 'wb')
             else:
@@ -79,18 +88,18 @@ class HttpDownloader(Downloader):
         pass
 
     @retry(reraise=True, stop=stop_after_attempt(3))
-    def _request_head(self, url):
+    def _request_head(self, url, header=None):
         try:
-            return self.session.head(url=url, timeout=self._timeout)
-
+            return self.session.head(url=url, headers=header, timeout=self._timeout)
         except requests.exceptions as e:
             # self.log.warning(e)
             return False
 
     @retry(reraise=True, stop=stop_after_attempt(3))
-    def _request_get(self, url, stream, verify, header=None):
+    def _request_get(self, url, header=None):
         try:
-            return self.session.get(url=url, stream=stream, verify=verify, headers=header, timeout=self._timeout)
+            return self.session.get(url=url, headers=header, stream=self._stream, verify=self._verify,
+                                    timeout=self._timeout)
 
         except requests.exceptions as e:
             # self.log.warning(e)
@@ -126,7 +135,6 @@ class HttpDownloader(Downloader):
     #             t1 = time.time()
     #         else:
     #             t1 = t2
-
 
     def _end_download(self, url):
         pass
