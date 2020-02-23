@@ -1,5 +1,6 @@
 import os
 import re
+import hashlib
 import mimetypes
 
 
@@ -24,6 +25,12 @@ class PathFormat:
 
     def open(self, mode='wb'):
         return open(self.temp_path, mode)
+
+    def md5sum(self, pathname):
+        with open(pathname, 'rb') as f:
+            m = hashlib.md5()
+            m.update(f.read())
+            return m.hexdigest()
 
     def _get_file_path(self, path):
         # 还需添加自定义路径合法性检查
@@ -51,4 +58,3 @@ class PathFormat:
 class Match:
     def __init__(self, **options):
         self.options = options
-

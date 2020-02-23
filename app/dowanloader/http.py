@@ -30,7 +30,7 @@ class HttpDownloader(Downloader):
     def _range_download(self, response, path_fmt):
         url = response.requests.url
 
-        # check content Length
+        # check total size
         if path_fmt.get('size'):
             total_size = int(path_fmt.get('size'))
         elif 'Content-Length' in response.headers:
@@ -40,11 +40,12 @@ class HttpDownloader(Downloader):
 
         # check for .temp file
         temp_size = path_fmt.temp_size()
-        if temp_size:
-            header = {'Range': 'bytes={}-'.format(temp_size)}
 
-        if temp_size < total_size:
+        if 0 < temp_size < total_size:
             header = {'Range': 'bytes={}-'.format(temp_size)}
+            mode = 'ab'
+        elif 0 < temp_size == total_size:
+            pass
 
         # connect to remote resources via head
         response = self._request_get(url=url, headers=header, stream=self._stream, verify=self._verify)
@@ -63,8 +64,6 @@ class HttpDownloader(Downloader):
             pass
         else:
             pass  # to be added
-
-        with path_fmt.open(mode) as file:
 
         if 0 <= temp_size < total_size:
             # header = {'Range': 'bytes={}-'.format(temp_size)}
@@ -136,5 +135,7 @@ class HttpDownloader(Downloader):
     #         else:
     #             t1 = t2
 
-    def _end_download(self, url):
-        pass
+    def _end_download(self, url, path_fmt):
+        md5 = path_fmt.md5sun()
+        if self.md5 == md5:
+            pass

@@ -22,7 +22,7 @@ class Downloader(Config):
         except Exception as e:
             raise e
         finally:
-            self._end_download(url)
+            self._end_download(url, path_fmt)
 
     def _start_download(self, url, **options):
         pass
