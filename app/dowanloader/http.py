@@ -11,15 +11,15 @@ class HttpDownloader(Downloader):
     def __init__(self, extractor):
         super().__init__(extractor)
 
-    def _start_download(self, url, path_fmt):
+    def _start_download(self, url, pathfmt):
         # select the download mode by response
         response = self._request_head(url=url)
         if response:
             if response.status_code == requests.codes.ok:
                 if response.headers.get('Transfer-Encoding') == 'chunked':
-                    self._chunked_download(response, path_fmt)
+                    self._chunked_download(response, pathfmt)
                 elif response.headers.get('Accept-Ranges') == 'bytes':
-                    self._range_download(response, path_fmt)
+                    self._range_download(response, pathfmt)
                 else:
                     pass
             else:
@@ -27,19 +27,19 @@ class HttpDownloader(Downloader):
         else:
             print(url + ' --> request timeout via head')
 
-    def _range_download(self, response, path_fmt):
+    def _range_download(self, response, pathfmt):
         url = response.requests.url
 
         # check total size
-        if path_fmt.get('size'):
-            total_size = int(path_fmt.get('size'))
+        if pathfmt.get('size'):
+            total_size = int(pathfmt.get('size'))
         elif 'Content-Length' in response.headers:
             total_size = int(response.headers.get('Content-Length'))
         else:
             total_size = 0
 
         # check for .temp file
-        temp_size = path_fmt.temp_size()
+        temp_size = pathfmt.temp_size()
 
         if 0 < temp_size < total_size:
             header = {'Range': 'bytes={}-'.format(temp_size)}
@@ -99,7 +99,6 @@ class HttpDownloader(Downloader):
         try:
             return self.session.get(url=url, headers=header, stream=self._stream, verify=self._verify,
                                     timeout=self._timeout)
-
         except requests.exceptions as e:
             # self.log.warning(e)
             return False

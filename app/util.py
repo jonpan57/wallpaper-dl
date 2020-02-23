@@ -7,6 +7,7 @@ import mimetypes
 class PathFormat:
     def __init__(self, extractor):
         self.path = extractor.config('Directory')
+        self.filename_fmt = extractor.filename_fmt
         try:
             self.filename = extractor.filename
         except AttributeError:
