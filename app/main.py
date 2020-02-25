@@ -15,6 +15,7 @@ bing = BingExtractor()
 konachan = KonachanExtractor()
 wallpapercraft = WallpaperCraftExtractor(resolution='1920x1080')
 
+
 downloader = HttpDownloader(wallpapercraft)
 processor.submit(downloader.download, wallpapercraft)
 

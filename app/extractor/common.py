@@ -9,12 +9,16 @@ from app.config import Config
 
 class Extractor(Config):
     category = 'extractor'
-
+    subcategory = ''
     directory_fmt = '{category}'
     filename_fmt = '{filename}{extension}'
+    archive_fmt = ''
     cookie_domain = ''
+
     root = ''
     links = []
+    link = ''
+
     is_last_page = False
 
     def __init__(self):
@@ -65,6 +69,15 @@ class Extractor(Config):
     def _update_cookie_file(self, cookie_file):
         pass
 
+    @property
+    def link(self):
+        try:
+            link = self.links.pop(0)
+        except IndexError:
+            link = ''
+        finally:
+            return link
+
     def next(self):
         self.links.clear()
         if self.is_last_page:
@@ -78,7 +91,7 @@ class Extractor(Config):
 
     def _get_page_links(self):
         print(self.url)
-        response = self._get_response_body(url=self.url)
+        response = self._request(url=self.url)
         if response:
             bs = bs4.BeautifulSoup(response.text, 'lxml')
             self._find_page_links(bs)
@@ -100,9 +113,12 @@ class Extractor(Config):
         pass
 
     @retry(reraise=True, stop=stop_after_attempt(10))
-    def _get_response_body(self, url):
+    def _request(self, url, method='GET', **kwargs):
         try:
-            return self.session.get(url=url)
+            response = self.session.request(method, url, timeout=self._timeout, verify=self._verify, **kwargs)
 
-        except requests.exceptions:
+        except requests.exceptions as e:
             return None
+        else:
+            code = response.status_code
+            if 200 <=

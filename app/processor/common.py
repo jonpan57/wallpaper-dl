@@ -1,5 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor
-from app.config import Config
+from ..config import Config
+from ..util import PathFormat
 
 
 class Processor(Config):
@@ -9,6 +10,9 @@ class Processor(Config):
         self.executor = ThreadPoolExecutor(max_workers=int(self.config('MaxWorkers')))
 
     def submit(self, func, extractor):
-        while extractor.next():
-            for link in extractor.links:
-                self.executor.submit(func, link)
+        pathfmt = PathFormat(extractor)
+        link = extractor.link
+
+        self.executor.submit(func, link, pathfmt)
+
+

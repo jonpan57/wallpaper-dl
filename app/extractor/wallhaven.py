@@ -15,7 +15,7 @@ class WallhavenExtractor(Extractor):
         self.category = 'wallhaven'
         self.root = self.config('Root')
         self.url = self.root + match
-        self.api = API(self)
+        self.api = WallhevanAPI(self)
 
     def filename(self, response):
         filename = os.path.basename(response.request.url).split('%20')
@@ -45,7 +45,7 @@ class WallhavenExtractor(Extractor):
             return None
 
     def login(self):
-        response = self._get_response_body('https://wallhaven.cc/login')
+        response = self._request('https://wallhaven.cc/login')
         if response:
             bs = bs4.BeautifulSoup(response.text, 'lxml')
             token = bs.find(name='input', attrs={'name': '_token'}).get('value')
@@ -57,7 +57,7 @@ class WallhavenExtractor(Extractor):
             self.session.post('https://wallhaven.cc/auth/login', data=data)
 
 
-class API:
+class WallhevanAPI:
     def __init__(self, extractor):
         self.extractor = extractor
         self.api_key = extractor.config('APIkey')

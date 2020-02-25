@@ -29,3 +29,12 @@ class KonachanExtractor(Extractor):
             return self.root + next_page.get('href')
         else:
             return None
+
+
+class KonachanPostsExtractor(KonachanExtractor):
+    page = ''
+    tags = ''
+    limit = ''
+
+    def __init__(self, page='', tags='', limit=''):
+        self.url = self.root + '/post.json?page={}&tags={}&limit={}'.format(page, tags, limit)
