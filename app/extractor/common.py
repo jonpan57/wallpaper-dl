@@ -26,7 +26,13 @@ class Extractor(Config):
         self._cookie_jar = self.session.cookies
         self._cookie_file = None
 
-        self._retries = int(self.config('Retries'))
+        self._retries = int(self.config('retries'))
+        self._timeout = int(self.config('timeout'))
+        self._verify = bool(self.config('verify'))
+        self._stream = bool(self.config('stream'))
+
+        if self._retries < 0:
+            self._retries = float('inf')
 
         self._init_headers()
         self._init_cookies()
@@ -34,6 +40,58 @@ class Extractor(Config):
 
     def __iter__(self):
         return self.items()
+
+    def items(self):
+        pass
+
+    def skip(self, num):
+        return 0
+
+    def request(self, url, method='GET', session=None, retries=None, encoding=None, **kwargs):
+        tries = 1
+        session = self.session if session is None else session
+        retries = self._retries if retries is None else retries
+        kwargs.setdefault('timeout', self._timeout)
+        kwargs.setdefault('verify', self._verify)
+
+        while True:
+            try:
+                response = session.request(method, url, **kwargs)
+
+            except requests.exceptions as e:
+                return None
+            else:
+                code = response.status_code
+                if 200 <= code < 500:
+                    if encoding:
+                        response.encoding = encoding
+                    return response
+                if code == 404:
+                    pass  # page not fonnd
+
+                # msg = "'{} {}' for '{}'".format(code, response.reason, url)
+                if code < 500 and code != 429 and code != 430:  # 不是很理解
+                    break
+
+            # self.log.debug("%s (%s/%s)", msg, tries, retries + 1)
+            if tries > retries:
+                break
+            tries += 1
+
+    def login(self):
+        """Login and set necessary cookies"""
+
+    def _get_auth_info(self):
+        username = self.config('username')
+        password = None
+        if username:
+            password = self.config('password')
+
+    def metadata(self, page):
+        """Return a dict with general metadata"""
+
+    def images(self, page):
+        """Return a list of all (image-url, metadata)-tuples"""
 
     def _init_headers(self):
         headers = self.session.headers
@@ -49,7 +107,7 @@ class Extractor(Config):
         if self.cookie_domain is None:
             return
 
-        cookies = self.config('Cookie')
+        cookies = self.config('cookie')
         if cookies:
             if isinstance(eval(cookies), dict):
                 self._update_cookie_dict(cookies, self.cookie_domain)
@@ -58,11 +116,6 @@ class Extractor(Config):
             else:
                 pass
 
-    def _init_proxies(self):
-        proxies = self.config('Proxy')
-        if proxies:
-            self.session.proxies = eval(proxies)
-
     def _update_cookie_dict(self, cookies, cookie_domain):
         set_cookie = self._cookie_jar.set
         for name, value in cookies:
@@ -70,6 +123,27 @@ class Extractor(Config):
 
     def _update_cookie_file(self, cookie_file):
         pass
+
+    def _init_proxies(self):
+        """
+        单个请求：
+            {"http": "http://10.10.1.10:3128","https": "http://10.10.1.10:1080"}
+
+        需要使用HTTP Basic Auth，可以使用 http://username:password@host/ 语法：
+            {"http": "http://username:password@10.10.1.10:3128/"}
+
+        需要特定的连接方式或者主机设置代理，使用 scheme://hostname 作为 key：
+             {'http://10.20.1.128': 'http://10.10.1.10:5323'}
+        """
+        proxies = self.config('Proxy')
+        if proxies:
+            try:
+                proxies = eval(proxies)
+            except SyntaxError:
+                pass
+            else:
+                if isinstance(proxies, dict):
+                    self.session.proxies = proxies
 
     @property
     def link(self):
@@ -113,46 +187,3 @@ class Extractor(Config):
 
     def _find_next_page(self, bs):
         pass
-
-    def items(self):
-        pass
-
-    def request(self, url, method='GET', session=None, retries=None, encoding=None, **kwargs):
-        tries = 1
-        session = self.session if session is None else session
-        retries = self._retries if retries is None else retries
-        kwargs.setdefault('timeout', self._timeout)
-        kwargs.setdefault('verify', self._verify)
-
-        while True:
-            try:
-                response = session.request(method, url, **kwargs)
-
-            except requests.exceptions as e:
-                return None
-            else:
-                code = response.status_code
-                if 200 <= code < 500:
-                    if encoding:
-                        response.encoding = encoding
-                    return response
-                if code == 404:
-                    pass  # page not fonnd
-
-                msg = "'{} {}' for '{}'".format(code, response.reason, url)
-                if code < 500 and code != 429 and code != 430:  # 不是很理解
-                    break
-
-            # self.log.debug("%s (%s/%s)", msg, tries, retries + 1)
-            if tries > retries:
-                break
-            tries += 1
-
-    def login(self):
-        """Login and set necessary cookies"""
-
-    def metadata(self, page):
-        """Return a dict with general metadata"""
-
-    def images(self, page):
-        """Return a list of all (image-url, metadata)-tuples"""

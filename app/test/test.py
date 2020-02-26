@@ -1,30 +1,11 @@
 import os
+import requests
 
+url = 'https://wallhaven.cc/auth/login'
+headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:73.0) Gecko/20100101 Firefox/73.0'}
+session = requests.session()
 
-# import hashlib
-#
-# url = 'https://w.wallhaven.cc/full/vg/wallhaven-vgrwe8.jpg'
-# root = '/home/administrator/PycharmProjects/wallpager-download-tool/app/test/Konachan.com - 301361 breast_grab breasts cum tagme_(artist) tagme_(character).jpg'
-#
-#
-# def md5sum(filename):
-#     with open(filename, 'rb') as f:
-#         m = hashlib.md5()
-#         m.update(f.read())
-#         return m.hexdigest()
-#
-#
-# md5 = md5sum(root)
-# print(md5)
-
-class Test:
-    def __init__(self, data):
-        self.data = data
-
-    def __iter__(self):
-        return self.data
-
-
-test = Test('test')
-s = test
-print(s)
+data = {'username': 'vergil', 'password': '196900', '_token': 'UZptRapCZS6PN2ZBQEzaSzYwtAlfCtNr4iJovwLQ'}
+response = session.post(url, data=data, headers=headers)
+cookiss = response.cookies
+print(cookiss)
