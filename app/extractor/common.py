@@ -3,7 +3,6 @@ import bs4
 import lxml
 import requests
 
-from tenacity import retry, stop_after_attempt
 from app.config import Config
 
 
@@ -32,6 +31,9 @@ class Extractor(Config):
         self._init_headers()
         self._init_cookies()
         self._init_proxies()
+
+    def __iter__(self):
+        return self.items()
 
     def _init_headers(self):
         headers = self.session.headers
@@ -91,7 +93,7 @@ class Extractor(Config):
 
     def _get_page_links(self):
         print(self.url)
-        response = self._request(url=self.url)
+        response = self.request(url=self.url)
         if response:
             bs = bs4.BeautifulSoup(response.text, 'lxml')
             self._find_page_links(bs)
@@ -112,13 +114,45 @@ class Extractor(Config):
     def _find_next_page(self, bs):
         pass
 
-    @retry(reraise=True, stop=stop_after_attempt(10))
-    def _request(self, url, method='GET', **kwargs):
-        try:
-            response = self.session.request(method, url, timeout=self._timeout, verify=self._verify, **kwargs)
+    def items(self):
+        pass
 
-        except requests.exceptions as e:
-            return None
-        else:
-            code = response.status_code
-            if 200 <=
+    def request(self, url, method='GET', session=None, retries=None, encoding=None, **kwargs):
+        tries = 1
+        session = self.session if session is None else session
+        retries = self._retries if retries is None else retries
+        kwargs.setdefault('timeout', self._timeout)
+        kwargs.setdefault('verify', self._verify)
+
+        while True:
+            try:
+                response = session.request(method, url, **kwargs)
+
+            except requests.exceptions as e:
+                return None
+            else:
+                code = response.status_code
+                if 200 <= code < 500:
+                    if encoding:
+                        response.encoding = encoding
+                    return response
+                if code == 404:
+                    pass  # page not fonnd
+
+                msg = "'{} {}' for '{}'".format(code, response.reason, url)
+                if code < 500 and code != 429 and code != 430:  # 不是很理解
+                    break
+
+            # self.log.debug("%s (%s/%s)", msg, tries, retries + 1)
+            if tries > retries:
+                break
+            tries += 1
+
+    def login(self):
+        """Login and set necessary cookies"""
+
+    def metadata(self, page):
+        """Return a dict with general metadata"""
+
+    def images(self, page):
+        """Return a list of all (image-url, metadata)-tuples"""

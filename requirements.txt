@@ -1,5 +1,4 @@
 requests
-tenacity
 tqdm
 lxml
 bs4

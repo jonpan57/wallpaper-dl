@@ -45,7 +45,7 @@ class WallhavenExtractor(Extractor):
             return None
 
     def login(self):
-        response = self._request('https://wallhaven.cc/login')
+        response = self.request('https://wallhaven.cc/login')
         if response:
             bs = bs4.BeautifulSoup(response.text, 'lxml')
             token = bs.find(name='input', attrs={'name': '_token'}).get('value')
