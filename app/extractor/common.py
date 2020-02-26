@@ -116,12 +116,15 @@ class Extractor(Config):
             else:
                 pass
 
-    def _update_cookie_dict(self, cookies, cookie_domain):
+    def _stroe_cookies(self):
+        pass
+
+    def _update_cookies_dict(self, cookies, cookie_domain):
         set_cookie = self._cookie_jar.set
         for name, value in cookies:
             set_cookie(name, value, domain=cookie_domain)
 
-    def _update_cookie_file(self, cookie_file):
+    def _update_cookies_file(self, cookie_file):
         pass
 
     def _init_proxies(self):
