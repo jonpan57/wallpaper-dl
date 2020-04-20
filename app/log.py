@@ -1,7 +1,85 @@
 import os
 import logging
 
-path = 'log/'
+dir_path = os.path.dirname(os.path.realpath(__file__))
+log_path = os.path.join(dir_path, 'logs')
+# 如果不存在logs文件夹，就自动创建一个
+if not os.path.exists(log_path):
+    os.mkdir(log_path)
+
+
+class Log:
+    def __init__(self, name, level=logging.DEBUG, when='D', backup_count=0):
+        """
+        记录日志
+        :param name: 日志名称
+        :param level: 日志等级
+        :param when: 间隔时间
+                    S: 秒
+                    M: 分钟
+                    H: 小时
+                    D: 天
+                    W0 - W6: 周一至周日
+                    midnight: 每天凌晨
+        :param backup_count: 备份文件的个数，若超过该值，就会自动删除
+        """
+        self.logger = logging.getLogger(name)
+        self.logger.setLevel(level)
+        self.filename = os.path.join(log_path, '{}.log'.format(name))
+
+        self.level = level
+        self.when = when
+        self.backup_count = backup_count
+        self.formatter = logging.Formatter('%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s')
+
+    def _console(self, level, message):
+        # 输出到文件
+        fh = logging.handlers.TimedRotatingFileHandler(self.filename, when=self.when, interval=14,
+                                                       backupCount=self.backup_count, encoding='utf-8')
+        fh.setLevel(self.level)
+        fh.setFormatter(self.formatter)
+        self.logger.addHandler(fh)
+
+        # 输出到控制台
+        sh = logging.StreamHandler()
+        sh.setLevel(logging.DEBUG)
+        sh.setFormatter(self.level)
+        self.logger.addHandler(sh)
+
+        # 根据输出级别输出信息
+        if level == 'debug':
+            self.logger.debug(message)
+        elif level == 'info':
+            self.logger.info(message)
+        elif level == 'warning':
+            self.logger.warning(message)
+        elif level == 'error':
+            self.logger.error(message)
+        elif level == 'critical':
+            self.logger.critical(message)
+
+        # 这两行代码是为了避免日志输出重复问题
+        self.logger.removeHandler(fh)
+        self.logger.removeHandler(sh)
+
+        # 关闭打开的文件
+        fh.close()
+
+    def debug(self, message):
+        self._console('debug', message)
+
+    def info(self, message):
+        self._console('info', message)
+
+    def warning(self, message):
+        self._console('warning', message)
+
+    def error(self, message):
+        self._console('error', message)
+
+    def critical(self, message):
+        self._console('critical', message)
+
 
 """
 %(asctime)s     :   日志的时间
@@ -16,38 +94,5 @@ path = 'log/'
 %(process)d     :   当前进程ID
 %(processName)s :   当前进程名称
 %(thread)d      :   当前线程ID
-%threadName)s   :   当前线程名称
+%(threadName)s   :   当前线程名称
 """
-
-
-def get_logger(name, level=logging.DEBUG, when='midnight', backup_count=0):
-    """
-    记录日志
-    :param name: 日志名称
-    :param level: 日志等级
-    :param when: 间隔时间
-        S: 秒
-        M: 分钟
-        H: 小时
-        D: 天
-        W: 星期（interval==0 代表星期一）
-        midnight: 每天凌晨
-    :param backup_count: 备份文件的个数，若超过该值，就会自动删除
-    :return: logger
-    """
-    logger = logging.getLogger(name)
-    logger.setLevel(level)
-    # 日志输出格式
-    formatter = logging.Formatter()
-    # 输出到控制台
-    sh = logging.StreamHandler()
-    # 输出到文件
-    fh = logging.FileHandler()
-    # 设置日志输出格式
-    sh.setFormatter(formatter)
-    fh.setFormatter(formatter)
-    # 添加到logger对象
-    logger.setHandler(sh)
-    logger.setHandler(fh)
-
-    return logger
