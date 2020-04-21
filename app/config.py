@@ -11,7 +11,7 @@ class Config:
     def __init__(self):
         self.cfg_path = cfg_path
         if not os.path.exists(cfg_path):
-            log.warning('配置文件不存在，创建默认配置文件')
+            log.warning('配置文件不存在，自动创建文件')
             self.restore()
 
         self.cfg = configparser.ConfigParser()
