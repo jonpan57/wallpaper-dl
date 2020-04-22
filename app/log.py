@@ -9,7 +9,7 @@ if not os.path.exists(log_path):
 
 
 class Log:
-    def __init__(self, name, level=logging.DEBUG, when='D', backup_count=0):
+    def __init__(self, name, level=logging.DEBUG, when='D', interval=14, backup_count=0):
         """
         记录日志
         :param name: 日志名称
@@ -29,6 +29,7 @@ class Log:
 
         self.level = level
         self.when = when
+        self.interval = interval
         self.backup_count = backup_count
         self.formatter = logging.Formatter('%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s')
         """
@@ -49,7 +50,7 @@ class Log:
 
     def _console(self, level, message):
         # 输出到文件
-        fh = logging.handlers.TimedRotatingFileHandler(self.filename, when=self.when, interval=14,
+        fh = logging.handlers.TimedRotatingFileHandler(self.filename, when=self.when, interval=self.interval,
                                                        backupCount=self.backup_count, encoding='utf-8')
         fh.setLevel(self.level)
         fh.setFormatter(self.formatter)
