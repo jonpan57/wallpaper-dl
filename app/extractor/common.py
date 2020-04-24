@@ -6,8 +6,9 @@ import requests
 from app.config import Config
 
 
-class Extractor(Config):
+class Extractor:
     category = 'extractor'
+    config = Config(category)
     subcategory = ''
     directory_fmt = '{category}'
     filename_fmt = '{filename}{extension}'

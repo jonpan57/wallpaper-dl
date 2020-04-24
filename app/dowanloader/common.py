@@ -3,8 +3,9 @@ import logging
 from app.config import Config
 
 
-class Downloader(Config):
+class Downloader:
     category = 'downloader'
+    config = Config(category)
 
     def __init__(self, extractor):
         self.session = extractor.session
