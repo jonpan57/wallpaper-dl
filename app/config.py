@@ -4,8 +4,7 @@ from .log import Log
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 cfg_path = os.path.join(dir_path, 'cfg.ini')
-# 如果不存在配置文件，就自动创建一个并恢复默认配置
-if not os.path.exists(cfg_path):
+if not os.path.exists(cfg_path):  # 如果不存在配置文件，就自动创建一个并恢复默认配置
     os.mknod(cfg_path)
 
 
@@ -28,31 +27,31 @@ class Config:
         try:
             value = self.cfg.get(section, option)
         except configparser.NoSectionError:
-            self.log.error('配置文件,查无此[{}]'.format(section))
+            self.log.error('配置文件，查无此[{}]'.format(section))
             value = None
         except configparser.NoOptionError:
-            self.log.error('配置文件,查无此[{}]{}'.format(section, option))
+            self.log.error('配置文件，查无此[{}]{}'.format(section, option))
             value = None
         finally:
             return value
 
     def _write(self, section, option, value):
-        # 检查配置组是否不存在，不存在则添加配置组
-        if not self.cfg.has_section(section):
+        if not self.cfg.has_section(section):  # 检查配置组是否不存在，不存在则添加配置组
             self.cfg.add_section(section)
-            self.lgo.info('新增[{}]'.format(section))
+            self.lgo.info('已新增[{}]'.format(section))
         self.cfg.set(section, option, value)
         self.cfg.write(open(cfg_path, 'w'))
-        self.log.info('设置[{}}]{}={}'.format(section, option, value))
+        self.log.info('已设置[{}}]{}={}'.format(section, option, value))
 
     def _remove(self, section, option):
-        # 检查配置组是否存在，存在则删除配置项，否则不操作
-        if self.cfg.has_section(section):
-            self.cfg.remove_option(section, option)
-            self.cfg.write(open(cfg_path, 'w'))
-            self.log.info('删除[{}]{}'.format(section, option))
+        if self.cfg.has_section(section):  # 检查配置组是否存在，存在则删除配置项，否则不操作
+            if self.cfg.remove_option(section, option):
+                self.cfg.write(open(cfg_path, 'w'))
+                self.log.info('已删除[{}]{}'.format(section, option))
+            else:
+                self.log.error('删除失败，查无此[{}]{}'.format(section, option))
         else:
-            pass
+            self.log.error('删除失败，查无此[{}]'.format(section))
 
     def restore(self):
         backup = ''
