@@ -24,14 +24,14 @@ class Log:
         :param backup_count: 备份文件的个数，若超过该值，就会自动删除
         """
         self.logger = logging.getLogger(name)
-        self.logger.setLevel(level)
         self.filename = os.path.join(log_path, '{}.log'.format(name))
-
+        self.logger.setLevel(level)
         self.level = level
         self.when = when
         self.interval = interval
         self.backup_count = backup_count
-        self.formatter = logging.Formatter('%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s')
+        self.formatter = logging.Formatter(
+            '%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s')
         """
         %(asctime)s     :   日志的时间
         %(name)         :   日志对象的名称
