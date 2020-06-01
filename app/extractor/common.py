@@ -3,13 +3,14 @@ import bs4
 import lxml
 import requests
 
+from app.log import Log
 from app.config import Config
 
 
 class Extractor:
     category = 'extractor'
-    config = Config(category)
     subcategory = ''
+
     directory_fmt = '{category}'
     filename_fmt = '{filename}{extension}'
     archive_fmt = ''
@@ -23,6 +24,8 @@ class Extractor:
 
     def __init__(self):
         self.session = requests.Session()
+        self.log = Log(self.category)
+        self.config = Config(self.category)
 
         self._cookie_jar = self.session.cookies
         self._cookie_file = None

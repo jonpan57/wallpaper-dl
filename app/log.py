@@ -3,8 +3,7 @@ import logging
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 log_path = os.path.join(dir_path, 'logs')
-# 如果不存在logs文件夹，就自动创建一个
-if not os.path.exists(log_path):
+if not os.path.exists(log_path):  # 如果不存在logs文件夹，就自动创建一个
     os.mkdir(log_path)
 
 

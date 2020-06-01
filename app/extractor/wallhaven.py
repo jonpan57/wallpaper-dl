@@ -23,7 +23,7 @@ class WallhavenExtractor(Extractor):
         return self.filename_fmt.format(id=filename[2], extension=extension)
 
     def _get_page_links(self):
-
+        pass
 
     def _find_page_links(self, bs):
         ul = bs.find_all('ul')
@@ -66,4 +66,3 @@ class WallhevanAPI:
 
     def info(self, wallpaper_id):
         url = 'https://wallhaven.cc/api/v1/w/' + wallpaper_id
-
