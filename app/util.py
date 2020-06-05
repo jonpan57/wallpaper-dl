@@ -59,3 +59,10 @@ class PathFormat:
 class Match:
     def __init__(self, **options):
         self.options = options
+
+
+def remove_file(path):
+    try:
+        os.unlink(path)
+    except OSError:
+        pass
