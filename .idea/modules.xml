@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/wallpager-download-tool.iml" filepath="$PROJECT_DIR$/.idea/wallpager-download-tool.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/wallpager-dl.iml" filepath="$PROJECT_DIR$/.idea/wallpager-dl.iml" />
     </modules>
   </component>
 </project>
