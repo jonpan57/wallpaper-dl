@@ -2,16 +2,51 @@ import os
 import time
 import requests
 
-from tenacity import retry, stop_after_attempt
-from .common import Downloader
-from ..util import PathFormat
+from app import util
+from app.dowanloader.common import Downloader
+from app.config import Config
 
 
 class HttpDownloader(Downloader):
+    subcategory = 'http'
+
     def __init__(self, extractor):
         super().__init__(extractor)
+        self.chunk_size = 16384
+        self.downloading = False
+
+        self.retries = extractor._retries
+        self.timeout = extractor._timeout
+        self.verify = extractor._verify
+
+        self.rate = self.config('rate')
+
+        if self.retries < 0:
+            self.verify = float('inf')
+
+    def download(self, url, pathfmt):
+        try:
+            return self._start_download(url, pathfmt)
+        except Exception:
+            print()
+            raise
+        finally:
+            if self.downloading and not self.part:
+                util.remove_file(pathfmt.temppath)
 
     def _start_download(self, url, pathfmt):
+        response = None
+        tries = 0
+
+        if self.part:
+            pathfmt.part_enable(self.partdir)
+
+        while True:
+            if tries:
+                if response:
+                    response.close()
+                self.log.warning('{} ()')
+
         # select the download mode by response
         response = self._request_head(url=url)
         if response:
@@ -85,23 +120,6 @@ class HttpDownloader(Downloader):
 
     def _chunked_download(self, url, path, filename):
         pass
-
-    @retry(reraise=True, stop=stop_after_attempt(3))
-    def _request_head(self, url, header=None):
-        try:
-            return self.session.head(url=url, headers=header, timeout=self._timeout)
-        except requests.exceptions as e:
-            # self.log.warning(e)
-            return False
-
-    @retry(reraise=True, stop=stop_after_attempt(3))
-    def _request_get(self, url, header=None):
-        try:
-            return self.session.get(url=url, headers=header, stream=self._stream, verify=self._verify,
-                                    timeout=self._timeout)
-        except requests.exceptions as e:
-            # self.log.warning(e)
-            return False
 
     @staticmethod
     def _get_file_size(response, filesize):  # 获取下载文件总大小
