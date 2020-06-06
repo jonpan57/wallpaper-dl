@@ -13,8 +13,8 @@ class Downloader:
         self.config = Config(self.category)
         self.log = Log('{}.{}'.format(self.category, self.subcategory))
 
-        self.part = self.config('part')
-        self.partdir = self.config('partdir')
+        self.temp = bool(self.config('temp'))  # 临时文件下载
+        self.tempdir = self.config('tempdir')  # 临时文件目录
 
     def download(self, url, pathfmt):
         '''从url下载到path_fmt'''

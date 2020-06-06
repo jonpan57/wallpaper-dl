@@ -31,23 +31,30 @@ class HttpDownloader(Downloader):
             print()
             raise
         finally:
-            if self.downloading and not self.part:
+            if self.downloading and not self.temp:
                 util.remove_file(pathfmt.temppath)
 
     def _start_download(self, url, pathfmt):
         response = None
         tries = 0
+        msg = ''
 
-        if self.part:
-            pathfmt.part_enable(self.partdir)
+        if self.temp:
+            pathfmt.enable_temp(self.tempdir)
 
         while True:
             if tries:
                 if response:
                     response.close()
-                self.log.warning('{} ()')
+                self.log.warning('{} ({}/{})'.format(msg, tries, self.retries))
+                if tries > self.retries:
+                    return False
+            tries += 1
+            # select the download mode by response
 
-        # select the download mode by response
+
+
+
         response = self._request_head(url=url)
         if response:
             if response.status_code == requests.codes.ok:

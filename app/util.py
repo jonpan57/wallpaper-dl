@@ -6,22 +6,37 @@ import mimetypes
 
 class PathFormat:
     def __init__(self, extractor):
-        self.path = extractor.config('Directory')
         self.filename_fmt = extractor.filename_fmt
+        self.directory_fmt = extractor.directory_fmt
+
         try:
             self.filename = extractor.filename
         except AttributeError:
             return None
+
+        self.extension = ''
 
     def format(self, response, path, filename):
         path = self._get_file_path(path)
         filename = self._get_file_name(response, filename)
         return path + filename
 
+    def set_extension(self, extension, real=True):
+        if real:
+            self.extension = extension
+
+    def enable_temp(self, temp_directory=None):
+        if self.extension:
+            self.temp_path += '.temp'
+        else:
+            self.set_extension('temp', False)
+            if temp_directory:
+                self.temp_path = os.path.join(temp_directory, os.path.basename(self.temp_path))
+
     def temp_size(self):
         try:
-            return os.path.getsize(self.temp_path)
-        except FileNotFoundError:
+            return os.stat(self.temp_path).st_size
+        except OSError:
             return 0
 
     def open(self, mode='wb'):

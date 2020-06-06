@@ -18,20 +18,34 @@ class Config:
             self.restore()
             self.log.warning('配置文件为空')
 
-    def config(self, option, value=None):  # 获取配置，同时可以修改配置
+    def config(self, option, value=None, convert='str'):  # 获取配置，同时可以修改配置
         if value:
             self._write(self.section, option, value)
-        return self._get(self.section, option)
+        return self._get(self.section, option, convert)
 
-    def _get(self, section, option):
+    def _get(self, section, option, convert):
         try:
-            value = self.cfg.get(section, option)
+            if convert == 'str':
+                value = self.cfg.get(section, option)
+            elif convert == 'int':
+                value = self.cfg.getint(section, option)
+            elif convert == 'float':
+                value = self.cfg.getfloat(section, option)
+            elif convert == 'bool':
+                value = self.cfg.getboolean(section, option)
+            else:
+                raise ValueError('Invalid typecast: ' + convert)
         except configparser.NoSectionError:
             self.log.error('配置文件，查无此[{}]'.format(section))
             value = None
         except configparser.NoOptionError:
             self.log.error('配置文件，查无此[{}]{}'.format(section, option))
             value = None
+        except ValueError as e:
+            if 'Invalid typecast'.find(str(e)):
+                pass
+            elif 'Not a boolean'.find(str(e)):
+                pass
         finally:
             return value
 
