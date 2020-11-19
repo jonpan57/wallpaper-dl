@@ -52,9 +52,6 @@ class HttpDownloader(Downloader):
             tries += 1
             # select the download mode by response
 
-
-
-
         response = self._request_head(url=url)
         if response:
             if response.status_code == requests.codes.ok:
