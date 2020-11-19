@@ -44,7 +44,7 @@ class Log:
         %(process)d     :   当前进程ID
         %(processName)s :   当前进程名称
         %(thread)d      :   当前线程ID
-        %(threadName)s   :   当前线程名称
+        %(threadName)s  :   当前线程名称
         """
 
     def _console(self, level, message):
@@ -58,7 +58,7 @@ class Log:
         # 输出到控制台
         sh = logging.StreamHandler()
         sh.setLevel(logging.DEBUG)
-        sh.setFormatter(self.level)
+        sh.setFormatter(self.formatter)
         self.logger.addHandler(sh)
 
         # 根据输出级别输出信息
