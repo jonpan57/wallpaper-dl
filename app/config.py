@@ -1,6 +1,7 @@
 import os
 import configparser
-from .log import Log
+
+# from .log import Log
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 cfg_path = os.path.join(dir_path, 'cfg.ini')
@@ -9,37 +10,37 @@ if not os.path.exists(cfg_path):  # 如果不存在配置文件，就自动创�
 
 
 class Config:
+
     def __init__(self, section):
+        self.section = section
         self.cfg = configparser.ConfigParser()
         self.cfg.read(cfg_path)
-        self.section = section
-        self.log = Log('config')
+        # self.log = Log('config')
         if os.path.getsize(cfg_path) == 0:  # 配置文件为空，恢复默认配置
-            self.restore()
             self.log.warning('配置文件为空')
+            self.restore()
 
-    def config(self, option, value=None, convert=None):  # 获取配置，同时可以修改配置
-        if value:
-            self._write(self.section, option, value)
-        return self._get(self.section, option, convert)
+    def _config(self, option=None, convert=None):  # 获取配置，同时可以修改配置
+        self.option = option
+        self.convert = convert
 
-    def _get(self, section, option, convert):
+    def _get(self):
         try:
-            if convert == 'int':
-                value = self.cfg.getint(section, option)
-            elif convert == 'float':
-                value = self.cfg.getfloat(section, option)
-            elif convert == 'bool':
-                value = self.cfg.getboolean(section, option)
+            if self.convert == 'int':
+                value = self.cfg.getint(self.section, self.option)
+            elif self.convert == 'float':
+                value = self.cfg.getfloat(self.section, self.option)
+            elif self.convert == 'bool':
+                value = self.cfg.getboolean(self.section, self.option)
             else:
-                value = self.cfg.get(section, option)
+                value = self.cfg.get(self.section, self.option)
 
         except configparser.NoSectionError:
-            self.log.error('配置文件，查无此[{}]'.format(section))
+            self.log.error('配置文件，查无此[{}]'.format(self.section))
             value = None
 
         except configparser.NoOptionError:
-            self.log.error('配置文件，查无此[{}]{}'.format(section, option))
+            self.log.error('配置文件，查无此[{}]{}'.format(self.section, self.option))
             value = None
 
         except ValueError as e:
@@ -47,13 +48,13 @@ class Config:
         finally:
             return value
 
-    def _write(self, section, option, value):
-        if not self.cfg.has_section(section):  # 检查配置组是否不存在，不存在则添加配置组
-            self.cfg.add_section(section)
-            self.lgo.info('已新增[{}]'.format(section))
-        self.cfg.set(section, option, value)
+    def _write(self, value):
+        if not self.cfg.has_section(self.section):  # 检查配置组是否不存在，不存在则添加配置组
+            self.cfg.add_section(self.section)
+            self.lgo.info('已新增[{}]'.format(self.section))
+        self.cfg.set(self.section, self.option, value)
         self.cfg.write(open(cfg_path, 'w'))
-        self.log.info('已设置[{}}]{}={}'.format(section, option, value))
+        self.log.info('已设置[{}}]{}={}'.format(self.section, self.option, value))
 
     def _remove(self, section, option):
         if self.cfg.has_section(section):  # 检查配置组是否存在，存在则删除配置项，否则不操作
@@ -66,7 +67,10 @@ class Config:
             self.log.error('删除失败，查无此[{}]'.format(section))
 
     def restore(self):
-        backup = ''
+        backup = ''  # 添加默认配置
         with open(cfg_path, mode='w', encoding='utf-8') as f:
             f.write(backup)
         self.log.info('已恢复默认配置')
+
+    config = _config
+    config = property(_get, _write, _remove)

@@ -13,13 +13,7 @@ class Log:
         记录日志
         :param name: 日志名称
         :param level: 日志等级
-        :param when: 间隔时间
-                    S: 秒
-                    M: 分钟
-                    H: 小时
-                    D: 天
-                    W0 - W6: 周一至周日
-                    midnight: 每天凌晨
+        :param when: 间隔时间（S: 秒，M: 分钟，H: 小时，D: 天，W0 - W6: 周一至周日，midnight: 每天凌晨）
         :param backup_count: 备份文件的个数，若超过该值，就会自动删除
         """
         self.logger = logging.getLogger(name)
@@ -51,7 +45,7 @@ class Log:
         # 输出到文件
         fh = logging.handlers.TimedRotatingFileHandler(self.filename, when=self.when, interval=self.interval,
                                                        backupCount=self.backup_count, encoding='utf-8')
-        fh.setLevel(self.level)
+        fh.setLevel(logging.DEBUG)
         fh.setFormatter(self.formatter)
         self.logger.addHandler(fh)
 
