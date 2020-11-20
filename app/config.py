@@ -1,7 +1,7 @@
 import os
 import configparser
 
-# from .log import Log
+from .log import Log
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 cfg_path = os.path.join(dir_path, 'cfg.ini')
@@ -11,6 +11,7 @@ class Config:
     def __init__(self, section):
         self.section = section
         self.cfg = configparser.ConfigParser()
+        self.log = Log('config')
         if os.path.exists(cfg_path):
             size = os.path.getsize(cfg_path)
             if size:  # 配置文件不为空，恢复默认配置
@@ -22,7 +23,6 @@ class Config:
             self.log.warning('配置文件不存在')
             os.mknod(cfg_path)
             self.restore()
-    # self.log = Log('config')
 
 
 def _config(self, option=None, convert=None):  # 获取配置，同时可以修改配置
