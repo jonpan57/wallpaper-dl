@@ -1,5 +1,6 @@
-from config import Config
+from config import _initial
+
 
 config = Config('download')
-config['test']='133'
+config.remove()
 # del config['test2']
