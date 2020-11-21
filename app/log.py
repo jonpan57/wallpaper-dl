@@ -1,5 +1,6 @@
 import os
 import logging
+import logging.handlers
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 log_path = os.path.join(dir_path, 'logs')
@@ -23,8 +24,7 @@ class Log:
         self.when = when
         self.interval = interval
         self.backup_count = backup_count
-        self.formatter = logging.Formatter(
-            '%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s')
+        self.formatter = logging.Formatter('%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s')
         """
         %(asctime)s     :   日志的时间
         %(name)         :   日志对象的名称

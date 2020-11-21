@@ -7,13 +7,12 @@ from .common import Extractor
 
 
 class WallhavenExtractor(Extractor):
-    filename_fmt = '{category}_{purity}_{id}_{resolution}{extension}'
-    api_key = 'wxlFzOHZajyFmYto3MSAoczXCQ8KkEEM'
+    filename_fmt = '{category}_{purity}_{id}_{resolution}.{extension}'
 
     def __init__(self, match):
         super().__init__()
         self.category = 'wallhaven'
-        self.root = self.config('Root')
+        self.root = self.config['Root']
         self.url = self.root + match
         self.api = WallhevanAPI(self)
 
@@ -60,9 +59,18 @@ class WallhavenExtractor(Extractor):
 class WallhevanAPI:
     def __init__(self, extractor):
         self.extractor = extractor
-        self.api_key = extractor.config('APIkey')
-        if not self.api_key:
+
+        self.api_key = extractor.config['api-key']
+        if self.api_key is None:
             self.api_key = 'wxlFzOHZajyFmYto3MSAoczXCQ8KkEEM'
+            extractor.log.debug('使用默认API Key')
+        else:
+            extractor.log.debug('使用自定义API Key')
+        self.url_info = extractor.root + extractor.config('api-info')
+        self.url_search = extractor.root + extractor.config('api-search')
 
     def info(self, wallpaper_id):
-        url = 'https://wallhaven.cc/api/v1/w/' + wallpaper_id
+        url = self.url_info + wallpaper_id
+        return url
+
+    def search(self):

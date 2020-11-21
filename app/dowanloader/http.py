@@ -2,9 +2,8 @@ import os
 import time
 import requests
 
-from app import util
-from app.dowanloader.common import Downloader
-from app.config import Config
+from .common import Downloader
+from .. import log, config, util
 
 
 class HttpDownloader(Downloader):
@@ -12,14 +11,15 @@ class HttpDownloader(Downloader):
 
     def __init__(self, extractor):
         super().__init__(extractor)
-        self.chunk_size = 16384
-        self.downloading = False
+        self.log = log.Log(self.category + '.' + self.subcategory)
+        self.config = config.Config('http')
+        self.chunk_size = self.config['chunk-size']
+        self.downloading = self.config['downloading', 'bool']
+        self.rate = self.config['rate']
 
         self.retries = extractor._retries
         self.timeout = extractor._timeout
         self.verify = extractor._verify
-
-        self.rate = self.config('rate')
 
         if self.retries < 0:
             self.verify = float('inf')

@@ -1,6 +1,5 @@
-from config import _initial
+import requests
 
+import time
 
-config = Config('download')
-config.remove()
-# del config['test2']
+print('Sleeping for %.5s seconds' % time.time())

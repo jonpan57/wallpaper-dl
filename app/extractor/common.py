@@ -1,10 +1,11 @@
 # extractor类，解决登录和解析网址
 import bs4
+import time
 import lxml
 import requests
 
-from app.log import Log
-from app.config import Config
+from ..log import Log
+from ..config import Config
 
 
 class Extractor:
@@ -12,15 +13,11 @@ class Extractor:
     subcategory = ''
 
     directory_fmt = '{category}'
-    filename_fmt = '{filename}{extension}'
+    filename_fmt = '{filename}.{extension}'
     archive_fmt = ''
     cookie_domain = ''
 
     root = ''
-    links = []
-    link = ''
-
-    is_last_page = False
 
     def __init__(self):
         self.session = requests.Session()
@@ -30,10 +27,11 @@ class Extractor:
         self._cookie_jar = self.session.cookies
         self._cookie_file = None
 
-        self._retries = int(self.config('retries'))
-        self._timeout = int(self.config('timeout'))
-        self._verify = bool(self.config('verify'))
-        self._stream = bool(self.config('stream'))
+        self._retries = self.config['retries', 'int']
+        self._timeout = self.config['timeout', 'int']
+        self._verify = self.config['verify', 'bool']
+        self._stream = self.config['stream', 'bool']
+        self._request_interval = self.config['interval', 'int']
 
         if self._retries < 0:
             self._retries = float('inf')
@@ -51,19 +49,30 @@ class Extractor:
     def skip(self, num):
         return 0
 
-    def request(self, url, method='GET', session=None, retries=None, encoding=None, **kwargs):
+    def request(self, url, *, method='GET', session=None, retries=None, encoding=None, **kwargs):
         tries = 1
         session = self.session if session is None else session
         retries = self._retries if retries is None else retries
         kwargs.setdefault('timeout', self._timeout)
         kwargs.setdefault('verify', self._verify)
 
+        if self._request_interval:
+            seconds = (self._request_interval - (time.time() - self._request_last))
+            if seconds > 0:
+                self.log.debug('请求间隔等待{}秒钟'.format(seconds))
+                time.sleep(seconds)
+
         while True:
             try:
                 response = session.request(method, url, **kwargs)
 
-            except requests.exceptions as e:
-                return None
+            except (requests.exceptions.ConnectionError,
+                    requests.exceptions.Timeout,
+                    requests.exceptions.ChunkedEncodingError,
+                    requests.exceptions.ContentDecodingError) as exc:
+                msg = exc
+            except(requests.exceptions.RequestException) as exc:
+                raise exception.HTTPError(exc)
             else:
                 code = response.status_code
                 if 200 <= code < 500:
@@ -82,14 +91,16 @@ class Extractor:
                 break
             tries += 1
 
+            self._request_last = time.time()
+
     def login(self):
         """Login and set necessary cookies"""
 
     def _get_auth_info(self):
-        username = self.config('username')
+        username = self.config['username']
         password = None
         if username:
-            password = self.config('password')
+            password = self.config['password']
 
     def metadata(self, page):
         """Return a dict with general metadata"""
@@ -100,18 +111,18 @@ class Extractor:
     def _init_headers(self):
         headers = self.session.headers
         headers.clear()
-        headers['User-Agent'] = self.config('User-Agent')
-        headers['Accept'] = self.config('Accept')
-        headers['Accept-Language'] = self.config('Accept-Language')
-        headers['Accept-Encoding'] = self.config('Accept-Encoding')
-        headers['Connection'] = self.config('Connection')
-        headers['Upgrade-Insecure-Requests'] = self.config('Upgrade-Insecure-Requests')
+        headers['User-Agent'] = self.config['User-Agent']
+        headers['Accept'] = self.config['Accept']
+        headers['Accept-Language'] = self.config['Accept-Language']
+        headers['Accept-Encoding'] = self.config['Accept-Encoding']
+        headers['Connection'] = self.config['Connection']
+        headers['Upgrade-Insecure-Requests'] = self.config['Upgrade-Insecure-Requests']
 
     def _init_cookies(self):
         if self.cookie_domain is None:
             return
 
-        cookies = self.config('cookie')
+        cookies = self.config['cookie']
         if cookies:
             if isinstance(eval(cookies), dict):
                 self._update_cookie_dict(cookies, self.cookie_domain)
@@ -142,7 +153,7 @@ class Extractor:
         需要特定的连接方式或者主机设置代理，使用 scheme://hostname 作为 key：
              {'http://10.20.1.128': 'http://10.10.1.10:5323'}
         """
-        proxies = self.config('Proxy')
+        proxies = self.config['Proxy']
         if proxies:
             try:
                 proxies = eval(proxies)
