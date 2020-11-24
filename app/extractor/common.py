@@ -72,7 +72,8 @@ class Extractor:
                     requests.exceptions.ContentDecodingError) as exc:
                 msg = exc
             except(requests.exceptions.RequestException) as exc:
-                raise exception.HTTPError(exc)
+                pass
+                # raise exception.HTTPError(exc)
             else:
                 code = response.status_code
                 if 200 <= code < 500:

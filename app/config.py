@@ -34,6 +34,15 @@ class Config:
         self.cfg = configparser.ConfigParser()
         self.cfg.read(cfg_path)
 
+    def get(self, option, convert=None):
+        self._get(option, convert)
+
+    def set(self, option, value):
+        self._write(option, value)
+
+    def delete(self, option):
+        self._remove_option(option)
+
     def __getitem__(self, option):
         if type(option) is str:
             return self._get(option, None)
