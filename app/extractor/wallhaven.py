@@ -21,28 +21,6 @@ class WallhavenExtractor(Extractor):
         extension = mimetypes.guess_extension(response.headers.get('Content-Type'))
         return self.filename_fmt.format(id=filename[2], extension=extension)
 
-    def _get_page_links(self):
-        pass
-
-    def _find_page_links(self, bs):
-        ul = bs.find_all('ul')
-        for li in ul:
-            link = li.find('img', class_='lazyload')
-            png = li.find('span', class_='png')
-            if png:
-                temp = link.get('src')
-                self.links.append(temp.replace('/small/', '/full/').replace('.jpg', '.png'))
-            else:
-                temp = link.get('src')
-                self.links.append(temp.replace('/small/', '/full/'))
-
-    def _find_next_page(self, bs):
-        next_page = bs.find('a', class_='next_page')
-        if next_page:
-            return self.root + next_page.get('href')
-        else:
-            return None
-
     def login(self):
         response = self.request('https://wallhaven.cc/login')
         if response:

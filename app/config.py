@@ -1,7 +1,7 @@
 import os
 import configparser
 
-from . import log
+import log
 
 log = log.Log('config')
 dir_path = os.path.dirname(os.path.realpath(__file__))

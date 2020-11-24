@@ -1,4 +1,5 @@
-import requests
-import time
+import ast
 
-print('Sleeping for %.5s seconds' % time.time())
+s = '{"http":"10.167.75.21"}'
+d = ast.literal_eval(s)
+print(d)

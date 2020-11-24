@@ -1,5 +1,6 @@
 # extractor类，解决登录和解析网址
 import bs4
+import ast
 import time
 import lxml
 import requests
@@ -112,12 +113,12 @@ class Extractor:
     def _init_headers(self):
         headers = self.session.headers
         headers.clear()
-        headers['User-Agent'] = self.config['User-Agent']
         headers['Accept'] = self.config['Accept']
-        headers['Accept-Language'] = self.config['Accept-Language']
         headers['Accept-Encoding'] = self.config['Accept-Encoding']
+        headers['Accept-Language'] = self.config['Accept-Language']
         headers['Connection'] = self.config['Connection']
         headers['Upgrade-Insecure-Requests'] = self.config['Upgrade-Insecure-Requests']
+        headers['User-Agent'] = self.config['User-Agent']
 
     def _init_cookies(self):
         if self.cookie_domain is None:
@@ -157,12 +158,14 @@ class Extractor:
         proxies = self.config['Proxy']
         if proxies:
             try:
-                proxies = eval(proxies)
+                proxies = ast.literal_eval(proxies)
             except SyntaxError:
-                pass
+                self.log.error('代理配置的参数异常')
             else:
-                if isinstance(proxies, dict):
+                if type(proxies) is dict:
                     self.session.proxies = proxies
+                else:
+                    self.log.error('代理配置的参数异常')
 
     @property
     def link(self):
