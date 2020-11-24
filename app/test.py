@@ -1,5 +1,9 @@
-import ast
+import requests
 
-s = '{"http":"10.167.75.21"}'
-d = ast.literal_eval(s)
-print(d)
+url1 = 'https://wallhaven.cc/api/v1/w/l395qq'
+url2 = 'https://wallhaven.cc/api/v1/w/l395qq'
+session = requests.Session()
+response = session.get(url1)
+print(response.history)
+response=session.get(url2)
+print(response.reason)

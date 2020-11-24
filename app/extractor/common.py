@@ -20,6 +20,9 @@ class Extractor:
 
     root = ''
 
+    _request_last = 0  # 上次请求时间
+    _request_interval = 0  # 请求时间间隔
+
     def __init__(self):
         self.session = requests.Session()
         self.log = Log(self.category)
@@ -50,7 +53,8 @@ class Extractor:
     def skip(self, num):
         return 0
 
-    def request(self, url, *, method='GET', session=None, retries=None, encoding=None, **kwargs):
+    def request(self, url, *, method='GET', session=None, retries=None, encoding=None, fatal=True, notfound=None,
+                **kwargs):
         tries = 1
         session = self.session if session is None else session
         retries = self._retries if retries is None else retries
@@ -76,13 +80,18 @@ class Extractor:
                 pass
                 # raise exception.HTTPError(exc)
             else:
+                """
+                转储功能
+                """
                 code = response.status_code
-                if 200 <= code < 500:
+                if 200 <= code < 400 or fatal is None and \
+                        (400 <= code < 500) or not fatal and \
+                        (400 <= code < 429 or 431 <= code < 500):
                     if encoding:
                         response.encoding = encoding
                     return response
-                if code == 404:
-                    pass  # page not fonnd
+                if notfound and code == 404:
+                    pass  # 添加报错
 
                 # msg = "'{} {}' for '{}'".format(code, response.reason, url)
                 if code < 500 and code != 429 and code != 430:  # 不是很理解
