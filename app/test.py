@@ -1,5 +1,7 @@
-import os
+import requests, requests.utils
 
-print (os.environ['HOME'])
-print (os.path.expandvars('$HOME/Wallper'))
-print (os.path.expanduser('~/Wallper'))
+url = 'https://wallhaven.cc'
+session = requests.Session()
+response = session.get(url)
+cook = requests.utils.dict_from_cookiejar(response.cookies)
+print(cook)
