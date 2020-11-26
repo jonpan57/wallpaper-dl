@@ -1,7 +1,4 @@
-import requests, requests.utils
+import requests
 
-url = 'https://wallhaven.cc'
-session = requests.Session()
-response = session.get(url)
-cook = requests.utils.dict_from_cookiejar(response.cookies)
-print(cook)
+response = requests.request('GET', 'https://wallhaven.cc')
+print(response.reason)

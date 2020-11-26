@@ -10,7 +10,7 @@ class WallhavenExtractor(Extractor):
     filename_fmt = '{category}_{purity}_{id}_{resolution}.{extension}'
 
     def __init__(self, match):
-        super().__init__()
+        super().__init__(match)
         self.category = 'wallhaven'
         self.root = self.config['Root']
         self.url = self.root + match

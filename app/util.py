@@ -81,3 +81,25 @@ def remove_file(path):
         os.unlink(path)
     except OSError:
         pass
+
+
+def save_cookies_text(fp, cookies):
+    fp.write("# Netscape HTTP Cookie File\n\n")
+
+    for cookie in cookies:
+        if cookie.value is None:
+            name = ''
+            value = cookie.name
+        else:
+            name = cookie.name
+            value = cookie.value
+
+        fp.write('\t'.join((
+            cookie.domain,
+            'TRUE' if cookie.domain.startswith('.') else 'FALSE',
+            cookie.path,
+            'TRUE' if cookie.secure else 'FALSE',
+            '0' if cookie.expires is None else str(cookie.expires),
+            name,
+            value,
+        )) + '\n')
